@@ -16,6 +16,9 @@ public class AndroidApplication extends Application {
     public void onCreate() {
         super.onCreate();
         sharedPreferences = getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(getString(R.string.token_key), "OPkJmTsbzKQp/vbpIdHZBNkhmTCnW8nSUiZ4/sk/+00=");
+        editor.commit();
         context = this;
     }
 
