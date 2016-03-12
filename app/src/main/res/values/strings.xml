@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">HomeBank</string>
+    <string name="action_settings">Settings</string>
+    <string name="header_reating">100</string>
+    <string name="header_login">Vladimir Medyannikov</string>
+    <string name="header_email">vladimir.medyannikov@gmail.com</string>
+    <string name="sync">sync</string>
+    <string name="preference_file_key">ru.medyannikov.homebank.preference</string>
+    <string name="token_key">ru.medyannikov.homebank.token</string>
+</resources>
