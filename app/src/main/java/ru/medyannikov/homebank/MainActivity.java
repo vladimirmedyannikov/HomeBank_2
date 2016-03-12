@@ -12,9 +12,11 @@ import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import java.util.List;
 
+import butterknife.ButterKnife;
 import retrofit.Callback;
 import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
@@ -23,16 +25,15 @@ import retrofit.client.Response;
 import ru.medyannikov.homebank.data.network.rest.RestFactory;
 import ru.medyannikov.homebank.data.network.rest.RestService;
 import ru.medyannikov.homebank.data.network.rest.models.Bill;
-import ru.medyannikov.homebank.data.network.rest.models.UserModel;
+
+import ru.medyannikov.homebank.data.storage.models.UserModel;
 import ru.medyannikov.homebank.ui.AndroidApplication;
 
 public class MainActivity extends AppCompatActivity {
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        ButterKnife.bind(this);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -42,9 +43,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 //testRest();
-                testRest2();
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                testRest3();
+//               Snackbar.make(view, AndroidApplication.getUser().getEmail(), Snackbar.LENGTH_LONG)
+ //                      .setAction("Action", null).show();
             }
         });
     }
@@ -125,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
             }
             @Override
             public void failure(RetrofitError error) {
-                Log.e("Retrofit error ","Url "+error.getUrl().toString() + " \n " + error.getBody().toString());
+                Log.e("Retrofit error ","Url "+ error.getUrl() + " \n " + error.getBody().toString());
             }
         };
         service.getUserModel(a);
@@ -133,7 +134,25 @@ public class MainActivity extends AppCompatActivity {
 
     public void testRest3(){
         RestService service = RestFactory.getRestService();
-        service.
+        Callback<UserModel> a = new Callback<UserModel>() {
+            @Override
+            public void success(UserModel user, Response response) {
+                if (response.getStatus() == 200){
+                    AndroidApplication.setUser(user);
+                }
+                Toast.makeText(getApplication(),"lol",Toast.LENGTH_SHORT).show();
+            }
+            @Override
+            public void failure(RetrofitError error) {
+               // Log.e("Retrofit error ","Url "+ error.getUrl() + " \n " + error.getBody().toString());
+                Log.e("errr", " ");
+                error.printStackTrace();
+                Toast.makeText(getApplication(),error.getMessage(),Toast.LENGTH_SHORT).show();
+            }
+        };
+        service.getUserModel(a);
     }
+
+
 
 }

@@ -1,11 +1,14 @@
 package ru.medyannikov.homebank.data.network.rest;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.squareup.okhttp.OkHttpClient;
 
 import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import retrofit.client.OkClient;
+import retrofit.converter.GsonConverter;
 import ru.medyannikov.homebank.ui.AndroidApplication;
 
 /**
@@ -19,6 +22,10 @@ public class RestFactory {
         RequestInterceptor requestInterceptor;
         RestAdapter.Builder restAdapter = new RestAdapter.Builder();
         restAdapter.setEndpoint(base_url);
+        Gson gson = new GsonBuilder()
+                .excludeFieldsWithoutExposeAnnotation()
+                .create();
+        restAdapter.setConverter(new GsonConverter(gson));
         restAdapter.setClient(new OkClient(CLIENT));
         if (token != null){
             requestInterceptor = new RequestInterceptor() {

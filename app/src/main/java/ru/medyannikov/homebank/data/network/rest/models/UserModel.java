@@ -1,5 +1,6 @@
 package ru.medyannikov.homebank.data.network.rest.models;
 
+import com.activeandroid.annotation.Column;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -7,21 +8,32 @@ import com.google.gson.annotations.SerializedName;
  * Created by Vladimir on 10.03.2016.
  */
 public class UserModel {
+    @Column(name = "idUser")
     @SerializedName("idUser")
     @Expose
     private Integer idUser;
+
+    @Column(name = "firstName")
     @SerializedName("firstName")
     @Expose
     private String firstName;
+
+    @Column(name = "lastName")
     @SerializedName("lastName")
     @Expose
     private String lastName;
+
+    @Column(name = "thirdName")
     @SerializedName("thirdName")
     @Expose
     private String thirdName;
+
+    @Column(name = "email")
     @SerializedName("email")
     @Expose
     private String email;
+
+    @Column(name = "password")
     @SerializedName("password")
     @Expose
     private String password;

@@ -8,7 +8,8 @@ import retrofit.http.Headers;
 import retrofit.http.POST;
 import retrofit.http.Path;
 import ru.medyannikov.homebank.data.network.rest.models.Bill;
-import ru.medyannikov.homebank.data.network.rest.models.UserModel;
+import ru.medyannikov.homebank.data.storage.models.UserModel;
+
 
 /**
  * Created by Vladimir on 07.03.2016.
