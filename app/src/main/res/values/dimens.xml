@@ -9,4 +9,7 @@
     <dimen name="navigation_header_height">160dp</dimen>
     <dimen name="drawer_avatar_width">64dp</dimen>
     <dimen name="drawer_avatar_height">64dp</dimen>
+    <dimen name="spacing_large">72dp</dimen>
+    <dimen name="spacing_normal">16dp</dimen>
+    <dimen name="spacing_min">8dp</dimen>
 </resources>

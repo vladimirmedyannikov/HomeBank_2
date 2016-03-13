@@ -20,15 +20,19 @@ public class AndroidApplication extends Application {
     private static SharedPreferences sharedPreferences;
     private static Context context;
     private static UserModel userModel;
+
+    public static Context getContext(){
+        return context;
+    }
     @Override
     public void onCreate() {
         super.onCreate();
         ActiveAndroid.initialize(this);
         sharedPreferences = getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
 
-        SharedPreferences.Editor editor = sharedPreferences.edit();
+        /*SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(getString(R.string.token_key), "OPkJmTsbzKQp/vbpIdHZBNkhmTCnW8nSUiZ4/sk/+00=");
-        editor.commit();
+        editor.commit();*/
 
         context = this;
     }
@@ -55,7 +59,15 @@ public class AndroidApplication extends Application {
                 UserModel userDb = userDbList.get(0);
                 if (userDb.getStatus() != 1){
                     //TODO update user data
+                    if (userDb.getDateUpdate().compareTo(user.getDateUpdate()) >= 0 ){
+                        userModel = userDb;
+                    }
+                    else{
+                        userDb.copyParam(user);
+                        userDb.save();
+                    }
                 }
+                userDb.copyParam(user);
                 userDb.setEmail(user.getEmail());
                 userModel = userDb;
             }
@@ -64,7 +76,6 @@ public class AndroidApplication extends Application {
                 user.save();
                 userModel = user;
             }
-            Toast.makeText(context, getUser().getEmail(),Toast.LENGTH_SHORT).show();
         }
     }
 

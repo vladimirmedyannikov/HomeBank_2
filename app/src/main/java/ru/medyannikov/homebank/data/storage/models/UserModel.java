@@ -73,6 +73,18 @@ public class UserModel extends Model {
     @Expose
     private Date dateUpdate;
 
+    @Column(name = "isAuth")
+    @Expose
+    private boolean auth;
+
+    public boolean isAuth() {
+        return auth;
+    }
+
+    public void setAuth(boolean auth) {
+        this.auth = auth;
+    }
+
     public Date getDateUpdate() {
         return dateUpdate;
     }
@@ -248,7 +260,7 @@ public class UserModel extends Model {
      * @return
      * The urlImage
      */
-    public Object getUrlImage() {
+    public String getUrlImage() {
         return urlImage;
     }
 
@@ -266,7 +278,7 @@ public class UserModel extends Model {
      * @return
      * The urlImageThumb
      */
-    public Object getUrlImageThumb() {
+    public String getUrlImageThumb() {
         return urlImageThumb;
     }
 
@@ -284,7 +296,7 @@ public class UserModel extends Model {
      * @return
      * The urlVk
      */
-    public Object getUrlVk() {
+    public String getUrlVk() {
         return urlVk;
     }
 
@@ -313,4 +325,17 @@ public class UserModel extends Model {
      */
     public void setStatus(Integer status) {
         this.status = status;
-    }}
+    }
+
+    public void copyParam(UserModel user) {
+        this.setEmail(user.getEmail());
+        this.setFirstName(user.getFirstName());
+        this.setLastName(user.getLastName());
+        this.setIdUser(user.getIdUser());
+        this.setThirdName(user.getThirdName());
+        this.setUrlImage(user.getUrlImage());
+        this.setUrlImageThumb(user.getUrlImageThumb());
+        this.setUrlVk(user.getUrlVk());
+        this.setEmail(user.getEmail());
+    }
+}

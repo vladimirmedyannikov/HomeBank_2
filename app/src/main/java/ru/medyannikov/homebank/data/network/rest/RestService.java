@@ -2,12 +2,14 @@ package ru.medyannikov.homebank.data.network.rest;
 
 import java.util.List;
 import retrofit.Callback;
+import retrofit.http.Field;
 import retrofit.http.FormUrlEncoded;
 import retrofit.http.GET;
 import retrofit.http.Headers;
 import retrofit.http.POST;
 import retrofit.http.Path;
 import ru.medyannikov.homebank.data.network.rest.models.Bill;
+import ru.medyannikov.homebank.data.storage.models.TokenModel;
 import ru.medyannikov.homebank.data.storage.models.UserModel;
 
 
@@ -32,5 +34,11 @@ public interface RestService {
 
     @POST("/mysql/signup")
     UserModel signUp();
+
+    @FormUrlEncoded
+    @POST("/oauth/token")
+    void signIn(@Field("grant_type") String grantType, @Field("client_id") String clientId,
+                      @Field("client_secret") String clientSecret, @Field("username") String username,
+                      @Field("password") String password, Callback<TokenModel> callback);
 
 }

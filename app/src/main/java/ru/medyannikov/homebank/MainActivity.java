@@ -1,40 +1,45 @@
 package ru.medyannikov.homebank;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Debug;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
-import java.util.List;
-
+import butterknife.Bind;
 import butterknife.ButterKnife;
 import retrofit.Callback;
-import retrofit.RequestInterceptor;
-import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 import ru.medyannikov.homebank.data.network.rest.RestFactory;
 import ru.medyannikov.homebank.data.network.rest.RestService;
-import ru.medyannikov.homebank.data.network.rest.models.Bill;
 
 import ru.medyannikov.homebank.data.storage.models.UserModel;
 import ru.medyannikov.homebank.ui.AndroidApplication;
+import ru.medyannikov.homebank.ui.fragments.ProfileFragment;
 
 public class MainActivity extends AppCompatActivity {
+    private static final String TAG_FRAGMENT = "current_fragment";
+
+    @Bind(R.id.navigation_view)
+    NavigationView mNavigationView;
+
+    private Fragment mFragment;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ButterKnife.bind(this);
+
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
+
+        auth();
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -43,13 +48,34 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 //testRest();
-                testRest3();
+                auth();
 //               Snackbar.make(view, AndroidApplication.getUser().getEmail(), Snackbar.LENGTH_LONG)
  //                      .setAction("Action", null).show();
             }
         });
+        initNavigationDrawer();
     }
 
+
+
+    private void initNavigationDrawer(){
+        if (mNavigationView != null){
+            mNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+                @Override
+                public boolean onNavigationItemSelected(MenuItem item) {
+                    switch (item.getItemId()){
+                        case R.id.profile_menu:
+                            mFragment = ProfileFragment.getInstance();
+                            break;
+                    }
+                    if (mFragment != null) {
+                        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, mFragment, TAG_FRAGMENT).addToBackStack(null).commit();
+                    }
+                    return false;
+                }
+            });
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -73,86 +99,23 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void testRest(){
-        RestAdapter restAdapter = new RestAdapter.Builder()
-                .setEndpoint(RestService.BASE_URL)
-                .build();
-        RestService service = restAdapter.create(RestService.class);
-        Callback<List<Bill>> a = new Callback<List<Bill>>() {
-            @Override
-            public void success(List<Bill> bills, Response response) {
-                /*for(Bill bill:bills)
-                {
-                    bill.add(post);
-                    adapter.notifyItemInserted(posts.size());
-                }
-                swipeRefreshLayout.setRefreshing(false);
-                adapter.setLoaded();*/
-                //result = 1;
-                System.out.print(" ");
-            }
-            @Override
-            public void failure(RetrofitError error) {
-                //posts = new LinkedList<Posts>();
-                //result = 0;
-                //retrofitError = error;
-                //swipeRefreshLayout.setRefreshing(false);
-            }
-        };
-        service.billList(a);
-    }
-
-    public void testRest2(){
-        RequestInterceptor requestInterceptor = new RequestInterceptor() {
-            @Override
-            public void intercept(RequestFacade request) {
-                request.addHeader("Authorization", "Bearer " + "OPkJmTsbzKQp/vbpIdHZBNkhmTCnW8nSUiZ4/sk/+00=");
-                //request.addQueryParam("device_type", "Samsung S4");
-            }
-        };
-
-
-        RestAdapter restAdapter = new RestAdapter.Builder()
-                .setEndpoint(RestService.BASE_URL)
-                .setRequestInterceptor(requestInterceptor)
-                .build();
-        RestService service = restAdapter.create(RestService.class);
-        Callback<UserModel> a = new Callback<UserModel>() {
-            @Override
-            public void success(UserModel user, Response response) {
-                if (response.getStatus() == 200){
-
-                }
-            }
-            @Override
-            public void failure(RetrofitError error) {
-                Log.e("Retrofit error ","Url "+ error.getUrl() + " \n " + error.getBody().toString());
-            }
-        };
-        service.getUserModel(a);
-    }
-
-    public void testRest3(){
+    public void auth(){
         RestService service = RestFactory.getRestService();
         Callback<UserModel> a = new Callback<UserModel>() {
             @Override
             public void success(UserModel user, Response response) {
                 if (response.getStatus() == 200){
                     AndroidApplication.setUser(user);
+                } else if (response.getStatus() == 401){
+                    //TODO not auth
                 }
-                Toast.makeText(getApplication(),"lol",Toast.LENGTH_SHORT).show();
             }
             @Override
             public void failure(RetrofitError error) {
-               // Log.e("Retrofit error ","Url "+ error.getUrl() + " \n " + error.getBody().toString());
-                Log.e("errr", " ");
+               //TODO error auth
                 error.printStackTrace();
-                Toast.makeText(getApplication(),error.getMessage(),Toast.LENGTH_SHORT).show();
             }
         };
         service.getUserModel(a);
     }
-
-
-
 }

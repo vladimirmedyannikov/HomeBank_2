@@ -1,4 +1,4 @@
-package ru.medyannikov.homebank;
+package ru.medyannikov.homebank.ui.fragments;
 
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -6,12 +6,23 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import ru.medyannikov.homebank.R;
+
 /**
  * A placeholder fragment containing a simple view.
  */
 public class MainActivityFragment extends Fragment {
+    private static MainActivityFragment fragment;
+
+    public static MainActivityFragment getInstance(){
+        if (fragment == null){
+            fragment = new MainActivityFragment();
+        }
+        return fragment;
+    }
 
     public MainActivityFragment() {
+
     }
 
     @Override

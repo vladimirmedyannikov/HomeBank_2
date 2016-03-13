@@ -16,8 +16,9 @@
         <meta-data
             android:name="AA_DB_VERSION"
             android:value="1" />
+        <activity android:name=".MainActivity"></activity>
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.activity.LoginActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>

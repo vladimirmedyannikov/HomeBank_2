@@ -7,4 +7,10 @@
     <string name="sync">sync</string>
     <string name="preference_file_key">ru.medyannikov.homebank.preference</string>
     <string name="token_key">ru.medyannikov.homebank.token</string>
+    <string name="fragment.profile.mobilelabel">Мобильный телефон</string>
+    <string name="fragment.profile.emailtitle">Email</string>
+    <string name="fragment.profile.vklabel">ВКонтакте</string>
+    <string name="fragment.profile.gitlabel">GitHub</string>
+    <string name="fragment.profile.aboutlabel">Обо мне</string>
+    <string name="drawer_menu_profile">Профиль</string>
 </resources>
