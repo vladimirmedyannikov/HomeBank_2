@@ -73,6 +73,32 @@ public class UserModel extends Model {
     @Expose
     private Date dateUpdate;
 
+    @Column(name = "phone")
+    @SerializedName("phone")
+    @Expose
+    private String phoneMobile;
+
+    @Column(name = "about")
+    @SerializedName("about")
+    @Expose
+    private String about;
+
+    public String getPhoneMobile() {
+        return phoneMobile;
+    }
+
+    public void setPhoneMobile(String phoneMobile) {
+        this.phoneMobile = phoneMobile;
+    }
+
+    public String getAbout() {
+        return about;
+    }
+
+    public void setAbout(String about) {
+        this.about = about;
+    }
+
     @Column(name = "isAuth")
     @Expose
     private boolean auth;
@@ -327,6 +353,10 @@ public class UserModel extends Model {
         this.status = status;
     }
 
+    public String getFullName(){
+        return getFirstName() + " " + getLastName() + " " + getThirdName();
+    }
+
     public void copyParam(UserModel user) {
         this.setEmail(user.getEmail());
         this.setFirstName(user.getFirstName());
@@ -337,5 +367,7 @@ public class UserModel extends Model {
         this.setUrlImageThumb(user.getUrlImageThumb());
         this.setUrlVk(user.getUrlVk());
         this.setEmail(user.getEmail());
+        this.setAbout(user.getAbout());
+        this.setPhoneMobile(user.getPhoneMobile());
     }
 }

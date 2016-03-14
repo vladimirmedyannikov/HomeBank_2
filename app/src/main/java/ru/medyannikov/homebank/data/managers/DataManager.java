@@ -1,5 +1,6 @@
 package ru.medyannikov.homebank.data.managers;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
@@ -12,6 +13,7 @@ import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 import ru.medyannikov.homebank.R;
+import ru.medyannikov.homebank.data.managers.events.LoginFailedEvent;
 import ru.medyannikov.homebank.data.managers.events.LoginSuccessEvent;
 import ru.medyannikov.homebank.data.network.rest.RestFactory;
 import ru.medyannikov.homebank.data.network.rest.RestService;
@@ -67,6 +69,7 @@ public class DataManager {
 
     public static void signIn(String login, String password) {
         RestService service = RestFactory.getRestService();
+
         Callback<TokenModel> callback = new Callback<TokenModel>() {
             @Override
             public void success(TokenModel tokenModel, Response response) {
@@ -85,7 +88,7 @@ public class DataManager {
                 else if (error.getResponse().getStatus() == 400){
                     Toast.makeText(AndroidApplication.getContext(), "Введенные данные некорректны!", Toast.LENGTH_LONG).show();
                 }
-
+                getBus().post(new LoginFailedEvent());
             }
         };
         service.signIn("password", "mobileV1", "abc123456", login, password, callback);

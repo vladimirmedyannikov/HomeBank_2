@@ -66,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
                     switch (item.getItemId()){
                         case R.id.profile_menu:
                             mFragment = ProfileFragment.getInstance();
+                            mNavigationView.getMenu().findItem(R.id.profile_menu).setChecked(true);
                             break;
                     }
                     if (mFragment != null) {

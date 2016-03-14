@@ -16,6 +16,10 @@
         <meta-data
             android:name="AA_DB_VERSION"
             android:value="1" />
+        <meta-data
+            android:name="AA_MODELS"
+            android:value="ru.medyannikov.data.storage.models.TokenModel, ru.medyannikov.data.storage.models.UserModel"/>
+
         <activity android:name=".MainActivity"></activity>
         <activity
             android:name=".ui.activity.LoginActivity"

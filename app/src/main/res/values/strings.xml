@@ -13,4 +13,7 @@
     <string name="fragment.profile.gitlabel">GitHub</string>
     <string name="fragment.profile.aboutlabel">Обо мне</string>
     <string name="drawer_menu_profile">Профиль</string>
+    <string name="logged">ru.medyannikov.homebank.logging</string>
+    <string name="user_id">ru.medyannikov.homebank.user_id</string>
+    <string name="fragment.profile.firstname_label">Имя</string>
 </resources>

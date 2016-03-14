@@ -1,5 +1,6 @@
 package ru.medyannikov.homebank.ui.activity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -17,6 +18,7 @@ import butterknife.OnClick;
 import ru.medyannikov.homebank.MainActivity;
 import ru.medyannikov.homebank.R;
 import ru.medyannikov.homebank.data.managers.DataManager;
+import ru.medyannikov.homebank.data.managers.events.LoginFailedEvent;
 import ru.medyannikov.homebank.data.managers.events.LoginSuccessEvent;
 import ru.medyannikov.homebank.ui.AndroidApplication;
 
@@ -41,6 +43,12 @@ public class LoginActivity extends AppCompatActivity {
         DataManager.getBus().register(this);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        int logged = AndroidApplication.getSharedPreferences().getInt(getString(R.string.logged), 0);
+        if (logged == 1){
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+        }
         //TODO activity build
     }
 
@@ -62,20 +70,32 @@ public class LoginActivity extends AppCompatActivity {
         ButterKnife.unbind(this);
         super.onDestroy();
     }
-
+    ProgressDialog dialog;
     @OnClick(R.id.sign_in)
     public void signIn(){
+        dialog = new ProgressDialog(this);
+        dialog.setTitle("Запрос");
+        dialog.setMessage("Аутентификация");
+        dialog.setCancelable(false);
         String login = mEmailField.getText().toString();
         String password = mPasswordField.getText().toString();
         DataManager.signIn(login, password);
+        dialog.show();
     }
 
     @Subscribe
     public void loginUser(LoginSuccessEvent event){
+        dialog.dismiss();
         SharedPreferences.Editor editor = AndroidApplication.getSharedPreferences().edit();
         editor.putString(getString(R.string.token_key), event.getTokenModel().getAccessToken()).apply();
+        editor.putInt(getString(R.string.logged), 1).apply();
 
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
+    }
+
+    @Subscribe
+    public void loginFailed(LoginFailedEvent event){
+        dialog.dismiss();
     }
 }

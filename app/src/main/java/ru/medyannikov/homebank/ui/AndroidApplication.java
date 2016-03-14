@@ -75,6 +75,8 @@ public class AndroidApplication extends Application {
             {
                 user.save();
                 userModel = user;
+                SharedPreferences.Editor editor = getSharedPreferences().edit();
+                editor.putLong(getContext().getString(R.string.user_id), getUser().getId()).apply();
             }
         }
     }
