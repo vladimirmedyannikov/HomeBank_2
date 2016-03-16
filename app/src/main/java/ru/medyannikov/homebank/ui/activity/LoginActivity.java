@@ -44,8 +44,7 @@ public class LoginActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        int logged = AndroidApplication.getSharedPreferences().getInt(getString(R.string.logged), 0);
-        if (logged == 1){
+        if (DataManager.isLogged()){
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
         }
@@ -62,7 +61,7 @@ public class LoginActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_24dp);
         }
-        setTitle("Lesson 1");
+        setTitle("Home Bank");
     }
 
     @Override
@@ -86,9 +85,7 @@ public class LoginActivity extends AppCompatActivity {
     @Subscribe
     public void loginUser(LoginSuccessEvent event){
         dialog.dismiss();
-        SharedPreferences.Editor editor = AndroidApplication.getSharedPreferences().edit();
-        editor.putString(getString(R.string.token_key), event.getTokenModel().getAccessToken()).apply();
-        editor.putInt(getString(R.string.logged), 1).apply();
+        DataManager.setToken(event.getTokenModel().getAccessToken());
 
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);

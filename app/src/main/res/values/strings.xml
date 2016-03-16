@@ -16,4 +16,5 @@
     <string name="logged">ru.medyannikov.homebank.logging</string>
     <string name="user_id">ru.medyannikov.homebank.user_id</string>
     <string name="fragment.profile.firstname_label">Имя</string>
+    <string name="drawer_menu_bills">Счета</string>
 </resources>

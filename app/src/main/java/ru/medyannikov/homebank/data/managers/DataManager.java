@@ -9,6 +9,9 @@ import android.widget.Toast;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -17,9 +20,12 @@ import ru.medyannikov.homebank.data.managers.events.LoginFailedEvent;
 import ru.medyannikov.homebank.data.managers.events.LoginSuccessEvent;
 import ru.medyannikov.homebank.data.network.rest.RestFactory;
 import ru.medyannikov.homebank.data.network.rest.RestService;
+import ru.medyannikov.homebank.data.storage.models.Bill;
 import ru.medyannikov.homebank.data.storage.models.TokenModel;
 import ru.medyannikov.homebank.data.storage.models.UserModel;
 import ru.medyannikov.homebank.ui.AndroidApplication;
+import ru.medyannikov.homebank.utils.ConstantManager;
+import ru.medyannikov.homebank.utils.NetworkStatusChecker;
 
 /**
  * Created by Vladimir on 12.03.2016.
@@ -29,7 +35,7 @@ public class DataManager {
         return AndroidApplication.getSharedPreferences().getString((R.string.token_key), null);
     }*/
     private static DataManager instance = new DataManager();
-
+    private static SharedPreferences sharedPreferences;
 
     public static DataManager getInstance(){
         if (instance == null){
@@ -41,6 +47,27 @@ public class DataManager {
     private DataManager(){
         mBus = new Bus();
         mBus.register(this);
+        sharedPreferences = AndroidApplication.getSharedPreferences();
+    }
+
+    public static String getToken(){
+        return sharedPreferences.getString(ConstantManager.TOKEN_KEY, null);
+    }
+
+    public static void setToken(String token){
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(ConstantManager.TOKEN_KEY, token);
+        editor.apply();
+    }
+
+    public static boolean isLogged(){
+        return getToken() != null;
+    }
+
+    public static void logout(){
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(ConstantManager.TOKEN_KEY, null);
+        editor.apply();
     }
 
     public static Bus getBus(){
@@ -92,6 +119,17 @@ public class DataManager {
             }
         };
         service.signIn("password", "mobileV1", "abc123456", login, password, callback);
+    }
+
+    public static List<Bill> getAllBills(){
+        List<Bill> billList = new ArrayList<>();
+        if (NetworkStatusChecker.isNetworkAvailable(AndroidApplication.getContext())){
+
+
+        }
+        billList.add(new Bill());
+        billList.add(new Bill());
+        return billList;
     }
 
 

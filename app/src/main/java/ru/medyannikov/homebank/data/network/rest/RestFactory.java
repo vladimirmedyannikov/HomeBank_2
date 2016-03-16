@@ -9,6 +9,7 @@ import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import retrofit.client.OkClient;
 import retrofit.converter.GsonConverter;
+import ru.medyannikov.homebank.data.managers.DataManager;
 import ru.medyannikov.homebank.ui.AndroidApplication;
 
 /**
@@ -40,7 +41,7 @@ public class RestFactory {
     }
 
     public static RestService getRestService(){
-        return getRetrofit(RestService.BASE_URL, AndroidApplication.getToken()).create(RestService.class);
+        return getRetrofit(RestService.BASE_URL, DataManager.getToken()).create(RestService.class);
     }
 
 }

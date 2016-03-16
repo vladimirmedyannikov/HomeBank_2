@@ -50,12 +50,13 @@ public class ProfileFragment extends Fragment {
 
         UserModel user = AndroidApplication.getUser();
         ((MainActivity)getActivity()).setTitle("Профиль");
-
-        firstName.setText(user.getFullName());
-        phone_value.setText(user.getPhoneMobile());
-        email_value.setText(user.getEmail());
-        vk_value.setText(user.getUrlVk());
-        about_value.setText(user.getAbout());
+        if (user != null) {
+            firstName.setText(user.getFullName());
+            phone_value.setText(user.getPhoneMobile());
+            email_value.setText(user.getEmail());
+            vk_value.setText(user.getUrlVk());
+            about_value.setText(user.getAbout());
+        }
 
     }
 

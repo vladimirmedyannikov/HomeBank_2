@@ -21,6 +21,7 @@ import ru.medyannikov.homebank.data.network.rest.RestService;
 
 import ru.medyannikov.homebank.data.storage.models.UserModel;
 import ru.medyannikov.homebank.ui.AndroidApplication;
+import ru.medyannikov.homebank.ui.fragments.BillsListFragment;
 import ru.medyannikov.homebank.ui.fragments.ProfileFragment;
 
 public class MainActivity extends AppCompatActivity {
@@ -68,6 +69,10 @@ public class MainActivity extends AppCompatActivity {
                             mFragment = ProfileFragment.getInstance();
                             mNavigationView.getMenu().findItem(R.id.profile_menu).setChecked(true);
                             break;
+                        case R.id.bills_menu:
+                            mFragment = BillsListFragment.getInstance();
+                            mNavigationView.getMenu().findItem(R.id.bills_menu).setChecked(true);
+                            break;
                     }
                     if (mFragment != null) {
                         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, mFragment, TAG_FRAGMENT).addToBackStack(null).commit();
@@ -75,6 +80,7 @@ public class MainActivity extends AppCompatActivity {
                     return false;
                 }
             });
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, ProfileFragment.getInstance(), TAG_FRAGMENT).addToBackStack(null).commit();
         }
     }
 
@@ -87,12 +93,8 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
         }

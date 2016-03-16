@@ -41,10 +41,6 @@ public class AndroidApplication extends Application {
         return sharedPreferences;
     }
 
-    public static String getToken(){
-        return getSharedPreferences().getString(context.getString(R.string.token_key), null);
-    }
-
     public static UserModel getUser(){
         return userModel;
     }

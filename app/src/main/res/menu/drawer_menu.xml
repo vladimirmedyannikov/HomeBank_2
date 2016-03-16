@@ -5,5 +5,10 @@
             android:id="@+id/profile_menu"
             android:checked="true"
             android:title="@string/drawer_menu_profile"/>
+        <item
+            android:id="@+id/bills_menu"
+            android:checked="true"
+            android:title="@string/drawer_menu_bills"
+            />
     </group>
 </menu>
