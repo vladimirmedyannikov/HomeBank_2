@@ -2,7 +2,10 @@ package ru.medyannikov.homebank.ui.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,8 +15,8 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import ru.medyannikov.homebank.MainActivity;
 import ru.medyannikov.homebank.R;
-import ru.medyannikov.homebank.data.storage.models.UserModel;
-import ru.medyannikov.homebank.ui.AndroidApplication;
+import ru.medyannikov.homebank.data.managers.DataManager;
+import ru.medyannikov.homebank.data.storage.models.Account;
 
 /**
  * Created by Vladimir on 13.03.2016.
@@ -32,11 +35,14 @@ public class ProfileFragment extends Fragment {
     @Bind(R.id.textview_firstname_value)
     TextView firstName;
 
+    private FloatingActionButton mFloatingActionButton;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_profile, null);
         ButterKnife.bind(this, view);
+        mFloatingActionButton = (FloatingActionButton) getActivity().findViewById(R.id.fab);
         getActivity().setTitle(getResources().getString(R.string.drawer_menu_profile));
 
 
@@ -48,15 +54,22 @@ public class ProfileFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        UserModel user = AndroidApplication.getUser();
+        CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) mFloatingActionButton.getLayoutParams();
+        params.setAnchorId(R.id.coordinator_container);
+        params.anchorGravity = Gravity.BOTTOM | Gravity.RIGHT;
+        mFloatingActionButton.setImageResource(R.drawable.ic_assignment_24dp);
+        mFloatingActionButton.setLayoutParams(params);
+
+        Account user = DataManager.getUser();
         ((MainActivity)getActivity()).setTitle("Профиль");
         if (user != null) {
             firstName.setText(user.getFullName());
-            phone_value.setText(user.getPhoneMobile());
+            phone_value.setText(user.getPhone());
             email_value.setText(user.getEmail());
             vk_value.setText(user.getUrlVk());
             about_value.setText(user.getAbout());
         }
+
 
     }
 

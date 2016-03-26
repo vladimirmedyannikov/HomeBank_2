@@ -4,7 +4,7 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBar;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -13,14 +13,8 @@ import android.view.MenuItem;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
-import ru.medyannikov.homebank.data.network.rest.RestFactory;
-import ru.medyannikov.homebank.data.network.rest.RestService;
+import ru.medyannikov.homebank.data.managers.DataManager;
 
-import ru.medyannikov.homebank.data.storage.models.UserModel;
-import ru.medyannikov.homebank.ui.AndroidApplication;
 import ru.medyannikov.homebank.ui.fragments.BillsListFragment;
 import ru.medyannikov.homebank.ui.fragments.ProfileFragment;
 
@@ -30,6 +24,9 @@ public class MainActivity extends AppCompatActivity {
     @Bind(R.id.navigation_view)
     NavigationView mNavigationView;
 
+    @Bind(R.id.navigation_drawer)
+    DrawerLayout mNavigationDrawer;
+
     private Fragment mFragment;
 
     @Override
@@ -38,8 +35,7 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-
-        auth();
+        DataManager.auth();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -49,12 +45,13 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 //testRest();
-                auth();
+                DataManager.auth();
 //               Snackbar.make(view, AndroidApplication.getUser().getEmail(), Snackbar.LENGTH_LONG)
  //                      .setAction("Action", null).show();
             }
         });
         initNavigationDrawer();
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, ProfileFragment.getInstance(), TAG_FRAGMENT).addToBackStack(null).commit();
     }
 
 
@@ -64,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
             mNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
                 @Override
                 public boolean onNavigationItemSelected(MenuItem item) {
-                    switch (item.getItemId()){
+                    switch (item.getItemId()) {
                         case R.id.profile_menu:
                             mFragment = ProfileFragment.getInstance();
                             mNavigationView.getMenu().findItem(R.id.profile_menu).setChecked(true);
@@ -77,10 +74,11 @@ public class MainActivity extends AppCompatActivity {
                     if (mFragment != null) {
                         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, mFragment, TAG_FRAGMENT).addToBackStack(null).commit();
                     }
+                    mNavigationDrawer.closeDrawers();
                     return false;
                 }
             });
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, ProfileFragment.getInstance(), TAG_FRAGMENT).addToBackStack(null).commit();
+
         }
     }
 
@@ -102,23 +100,5 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void auth(){
-        RestService service = RestFactory.getRestService();
-        Callback<UserModel> a = new Callback<UserModel>() {
-            @Override
-            public void success(UserModel user, Response response) {
-                if (response.getStatus() == 200){
-                    AndroidApplication.setUser(user);
-                } else if (response.getStatus() == 401){
-                    //TODO not auth
-                }
-            }
-            @Override
-            public void failure(RetrofitError error) {
-               //TODO error auth
-                error.printStackTrace();
-            }
-        };
-        service.getUserModel(a);
-    }
+
 }

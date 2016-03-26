@@ -1,13 +1,13 @@
 package ru.medyannikov.homebank.data.managers.events;
 
 import ru.medyannikov.homebank.data.storage.models.TokenModel;
-import ru.medyannikov.homebank.data.storage.models.UserModel;
+import ru.medyannikov.homebank.data.storage.models.Account;
 
 /**
  * Created by Vladimir on 13.03.2016.
  */
 public class LoginSuccessEvent {
-    private UserModel mUserModel;
+    private Account mAccount;
     private TokenModel tokenModel;
 
     public LoginSuccessEvent(TokenModel tokenModel) {

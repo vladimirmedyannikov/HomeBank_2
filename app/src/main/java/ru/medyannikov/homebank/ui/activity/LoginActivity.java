@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.squareup.otto.Subscribe;
 
@@ -20,6 +21,7 @@ import ru.medyannikov.homebank.R;
 import ru.medyannikov.homebank.data.managers.DataManager;
 import ru.medyannikov.homebank.data.managers.events.LoginFailedEvent;
 import ru.medyannikov.homebank.data.managers.events.LoginSuccessEvent;
+import ru.medyannikov.homebank.data.managers.events.NetworkStatusError;
 import ru.medyannikov.homebank.ui.AndroidApplication;
 
 /**
@@ -41,27 +43,16 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.layout_login);
         ButterKnife.bind(this);
         DataManager.getBus().register(this);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        if (DataManager.isLogged()){
+       if (DataManager.isLogged()){
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
         }
-        //TODO activity build
-    }
 
-    /**
-     * Инициализация ToolBar
-     */
-    private void setupToolBar(){
-        //setSupportActionBar(mToolbar);
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null){
-            actionBar.setDisplayHomeAsUpEnabled(true);
-            actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_24dp);
-        }
-        setTitle("Home Bank");
+        //TODO activity build
     }
 
     @Override
@@ -86,6 +77,7 @@ public class LoginActivity extends AppCompatActivity {
     public void loginUser(LoginSuccessEvent event){
         dialog.dismiss();
         DataManager.setToken(event.getTokenModel().getAccessToken());
+        DataManager.auth();
 
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
@@ -93,6 +85,12 @@ public class LoginActivity extends AppCompatActivity {
 
     @Subscribe
     public void loginFailed(LoginFailedEvent event){
+        Toast.makeText(this, "Произошла ошибка авторизации", Toast.LENGTH_SHORT).show();
         dialog.dismiss();
+    }
+
+    @Subscribe
+    public void errorNetwork(NetworkStatusError error){
+        Toast.makeText(AndroidApplication.getContext(), "Error connetcion internet", Toast.LENGTH_SHORT).show();
     }
 }

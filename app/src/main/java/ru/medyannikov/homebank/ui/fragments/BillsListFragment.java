@@ -1,14 +1,20 @@
 package ru.medyannikov.homebank.ui.fragments;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -19,16 +25,19 @@ import butterknife.ButterKnife;
 import ru.medyannikov.homebank.R;
 import ru.medyannikov.homebank.data.managers.DataManager;
 import ru.medyannikov.homebank.data.storage.models.Bill;
+import ru.medyannikov.homebank.ui.AndroidApplication;
 import ru.medyannikov.homebank.ui.adapters.BillAdapter;
 
 /**
  * Created by Vladimir on 07.03.2016.
  */
-public class BillsListFragment extends Fragment {
+public class BillsListFragment extends Fragment implements View.OnClickListener {
     @Bind(R.id.bills_recyclerview)
     RecyclerView recyclerView;
     @Bind(R.id.bills_swipe)
     SwipeRefreshLayout swipeRefreshLayout;
+
+    private FloatingActionButton mFloatingActionButton;
 
     private List<Bill> billList = new ArrayList<>();
     private static BillsListFragment fragment;
@@ -46,7 +55,8 @@ public class BillsListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_bills_list,null, false);
         ButterKnife.bind(this, view);
-
+        getActivity().setTitle("Счета");
+        mFloatingActionButton = (FloatingActionButton) getActivity().findViewById(R.id.fab);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new BillAdapter(billList);
         recyclerView.setAdapter(adapter);
@@ -65,6 +75,7 @@ public class BillsListFragment extends Fragment {
 
     private void refreshBill() {
         Toast.makeText(getContext(), "Refresh", Toast.LENGTH_SHORT).show();
+        billList.clear();
         billList.addAll(DataManager.getAllBills());
         adapter.notifyItemInserted(billList.size());
         swipeRefreshLayout.setRefreshing(false);
@@ -73,5 +84,46 @@ public class BillsListFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) mFloatingActionButton.getLayoutParams();
+        params.setAnchorId(R.id.bills_recyclerview);
+        params.anchorGravity = Gravity.BOTTOM | Gravity.RIGHT |Gravity.END;
+        mFloatingActionButton.setImageResource(R.drawable.ic_add_24dp);
+        mFloatingActionButton.setLayoutParams(params);
+
+        mFloatingActionButton.setOnClickListener(this);
+    }
+/**
+ * Fab listener
+ * */
+    @Override
+    public void onClick(View v) {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(getContext());
+        View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_add_bill,null,false);
+        final EditText nameBill = (EditText) view.findViewById(R.id.billName);
+        final EditText aboutBill = (EditText) view.findViewById(R.id.billAbout);
+
+        dialog.setTitle("Создание счета")
+               .setView(view)
+                .setPositiveButton("Добавить", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Bill bill = new Bill();
+                        bill.setName(nameBill.getText().toString());
+                        bill.setAbout(aboutBill.getText().toString());
+                        bill.setIdUser(DataManager.getUser().getId());
+                        bill.save();
+                        refreshBill();
+                        dialog.dismiss();
+                    }
+                })
+                .setNegativeButton("Отмена", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+        AlertDialog alertDialog = dialog.create();
+        dialog.show();
+
     }
 }

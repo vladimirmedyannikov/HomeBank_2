@@ -34,6 +34,7 @@ public class BillAdapter extends RecyclerView.Adapter<BillViewHolder> {
         holder.nameBill.setText(bill.getName());
         holder.aboutBill.setText(bill.getAbout());
         holder.summValue.setText(bill.getValue().toString());
+        holder.itemView.setId(bill.getIdBill());
     }
 
     @Override

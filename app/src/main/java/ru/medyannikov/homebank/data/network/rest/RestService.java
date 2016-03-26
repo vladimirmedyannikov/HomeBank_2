@@ -5,12 +5,10 @@ import retrofit.Callback;
 import retrofit.http.Field;
 import retrofit.http.FormUrlEncoded;
 import retrofit.http.GET;
-import retrofit.http.Headers;
 import retrofit.http.POST;
-import retrofit.http.Path;
 import ru.medyannikov.homebank.data.network.rest.models.Bill;
 import ru.medyannikov.homebank.data.storage.models.TokenModel;
-import ru.medyannikov.homebank.data.storage.models.UserModel;
+import ru.medyannikov.homebank.data.storage.models.Account;
 
 
 /**
@@ -30,10 +28,10 @@ public interface RestService {
 
     //@Headers({"Autorization : Bearer OPkJmTsbzKQp/vbpIdHZBNkhmTCnW8nSUiZ4/sk/+00="})
     @GET("/test")
-    void getUserModel(Callback<UserModel> callback);
+    void getUserModel(Callback<Account> callback);
 
     @POST("/mysql/signup")
-    UserModel signUp();
+    Account signUp();
 
     @FormUrlEncoded
     @POST("/oauth/token")

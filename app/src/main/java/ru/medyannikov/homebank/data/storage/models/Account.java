@@ -11,12 +11,16 @@ import java.util.Date;
 /**
  * Created by Vladimir on 12.03.2016.
  */
-@Table(name = "Users")
-public class UserModel extends Model {
-    @Column(name = "idUser")
-    @SerializedName("idUser")
+@Table(name = "Accounts", id = "_id")
+public class Account extends Model {
+    @Column(name = "id")
     @Expose
-    private Integer idUser;
+    private long id;
+
+    @Column(name = "idAccount")
+    @SerializedName("idAccount")
+    @Expose
+    private long idAccount;
 
     @Column(name = "firstName")
     @SerializedName("firstName")
@@ -43,11 +47,6 @@ public class UserModel extends Model {
     @Expose
     private String token;
 
-    @Column(name = "login")
-    @SerializedName("login")
-    @Expose
-    private String login;
-
     @Column(name = "urlImage")
     @SerializedName("urlImage")
     @Expose
@@ -66,29 +65,29 @@ public class UserModel extends Model {
     @Column(name = "status")
     @SerializedName("status")
     @Expose
-    private Integer status;
+    private Integer status = 0;
 
     @Column(name = "dateUpdate")
     @SerializedName("dateUpdate")
     @Expose
-    private Date dateUpdate;
+    private Date dateUpdate = new Date();
 
-    @Column(name = "phone")
+    @Column(name = "phoneNumber")
     @SerializedName("phone")
     @Expose
-    private String phoneMobile;
+    private String phone;
 
     @Column(name = "about")
     @SerializedName("about")
     @Expose
     private String about;
 
-    public String getPhoneMobile() {
-        return phoneMobile;
+    public String getPhone() {
+        return phone;
     }
 
-    public void setPhoneMobile(String phoneMobile) {
-        this.phoneMobile = phoneMobile;
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
     public String getAbout() {
@@ -123,8 +122,25 @@ public class UserModel extends Model {
      * No args constructor for use in serialization
      *
      */
-    public UserModel() {
+    public Account() {
         super();
+    }
+
+    public Account(Integer idAccount, String firstName, String lastName, String thirdName,
+                   String email, String token, String urlImage, String urlImageThumb,
+                   String urlVk, Date dateUpdate, String phone, String about) {
+        this.idAccount = idAccount;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.thirdName = thirdName;
+        this.email = email;
+        this.token = token;
+        this.urlImage = urlImage;
+        this.urlImageThumb = urlImageThumb;
+        this.urlVk = urlVk;
+        this.dateUpdate = dateUpdate;
+        this.phone = phone;
+        this.about = about;
     }
 
     /**
@@ -136,19 +152,17 @@ public class UserModel extends Model {
      * @param status
      * @param token
      * @param email
-     * @param idUser
-     * @param login
+     * @param idAccount
      * @param urlImageThumb
      * @param firstName
      */
-    public UserModel(Integer idUser, String firstName, String lastName, String thirdName, String email, String token, String login, String urlImage, String urlImageThumb, String urlVk, Integer status) {
-        this.idUser = idUser;
+    public Account(Integer idAccount, String firstName, String lastName, String thirdName, String email, String token, String urlImage, String urlImageThumb, String urlVk, Integer status) {
+        this.idAccount = idAccount;
         this.firstName = firstName;
         this.lastName = lastName;
         this.thirdName = thirdName;
         this.email = email;
         this.token = token;
-        this.login = login;
         this.urlImage = urlImage;
         this.urlImageThumb = urlImageThumb;
         this.urlVk = urlVk;
@@ -158,19 +172,19 @@ public class UserModel extends Model {
     /**
      *
      * @return
-     * The idUser
+     * The idAccount
      */
-    public Integer getIdUser() {
-        return idUser;
+    public long getIdAccount() {
+        return idAccount;
     }
 
     /**
      *
-     * @param idUser
-     * The idUser
+     * @param idAccount
+     * The idAccount
      */
-    public void setIdUser(Integer idUser) {
-        this.idUser = idUser;
+    public void setIdAccount(long idAccount) {
+        this.idAccount = idAccount;
     }
 
     /**
@@ -266,24 +280,6 @@ public class UserModel extends Model {
     /**
      *
      * @return
-     * The login
-     */
-    public String getLogin() {
-        return login;
-    }
-
-    /**
-     *
-     * @param login
-     * The login
-     */
-    public void setLogin(String login) {
-        this.login = login;
-    }
-
-    /**
-     *
-     * @return
      * The urlImage
      */
     public String getUrlImage() {
@@ -357,17 +353,17 @@ public class UserModel extends Model {
         return getFirstName() + " " + getLastName() + " " + getThirdName();
     }
 
-    public void copyParam(UserModel user) {
-        this.setEmail(user.getEmail());
-        this.setFirstName(user.getFirstName());
-        this.setLastName(user.getLastName());
-        this.setIdUser(user.getIdUser());
-        this.setThirdName(user.getThirdName());
-        this.setUrlImage(user.getUrlImage());
-        this.setUrlImageThumb(user.getUrlImageThumb());
-        this.setUrlVk(user.getUrlVk());
-        this.setEmail(user.getEmail());
-        this.setAbout(user.getAbout());
-        this.setPhoneMobile(user.getPhoneMobile());
+    public void copyParam(Account Account) {
+        this.setEmail(Account.getEmail());
+        this.setFirstName(Account.getFirstName());
+        this.setLastName(Account.getLastName());
+        this.setIdAccount(Account.getIdAccount());
+        this.setThirdName(Account.getThirdName());
+        this.setUrlImage(Account.getUrlImage());
+        this.setUrlImageThumb(Account.getUrlImageThumb());
+        this.setUrlVk(Account.getUrlVk());
+        this.setEmail(Account.getEmail());
+        this.setAbout(Account.getAbout());
+        this.setPhone(Account.getPhone());
     }
 }

@@ -13,15 +13,16 @@
         android:theme="@style/AppTheme">
         <meta-data
             android:name="AA_DB_NAME"
-            android:value="HomeBank.db" />
+            android:value="HomeBank_debug.db" />
         <meta-data
             android:name="AA_DB_VERSION"
-            android:value="1" />
+            android:value="2" />
         <meta-data
             android:name="AA_MODELS"
-            android:value="ru.medyannikov.data.storage.models.TokenModel, ru.medyannikov.data.storage.models.UserModel"/>
+            android:value="ru.medyannikov.data.storage.models.TokenModel, ru.medyannikov.data.storage.models.UserModel, ru.medyannikov.data.storage.models.Operation"/>
 
         <activity android:name=".MainActivity"></activity>
+        <activity android:name=".ui.activity.OperationActivity"></activity>
         <activity
             android:name=".ui.activity.LoginActivity"
             android:label="@string/app_name"
