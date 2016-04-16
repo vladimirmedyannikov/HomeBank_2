@@ -6,16 +6,14 @@ import com.activeandroid.annotation.Table;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * Created by Vladimir on 12.03.2016.
  */
-@Table(name = "Accounts", id = "_id")
-public class Account extends Model {
-    @Column(name = "id")
-    @Expose
-    private long id;
+@Table(name = "Accounts")
+public class Account extends Model implements Serializable {
 
     @Column(name = "idAccount")
     @SerializedName("idAccount")
@@ -357,7 +355,7 @@ public class Account extends Model {
         this.setEmail(Account.getEmail());
         this.setFirstName(Account.getFirstName());
         this.setLastName(Account.getLastName());
-        this.setIdAccount(Account.getIdAccount());
+        //this.setIdAccount(Account.getIdAccount());
         this.setThirdName(Account.getThirdName());
         this.setUrlImage(Account.getUrlImage());
         this.setUrlImageThumb(Account.getUrlImageThumb());

@@ -2,15 +2,15 @@
 <android.support.design.widget.CoordinatorLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:android="http://schemas.android.com/apk/res/android" >
+    xmlns:android="http://schemas.android.com/apk/res/android">
     <android.support.v4.widget.SwipeRefreshLayout
-        android:id="@+id/bills_swipe"
+        android:id="@+id/operation_swipe"
         android:layout_height="match_parent"
         android:layout_width="match_parent"
         xmlns:android="http://schemas.android.com/apk/res/android">
         <android.support.v7.widget.RecyclerView
             xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/bills_recyclerview"
+            android:id="@+id/operation_recyclerview"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
         </android.support.v7.widget.RecyclerView>

@@ -15,7 +15,7 @@ import ru.medyannikov.homebank.data.storage.models.Account;
  * Created by Vladimir on 07.03.2016.
  */
 public interface RestService {
-    String BASE_URL = "http://mangyst.ddns.net:3101";
+    String BASE_URL = "http://mangystapi.ru:3101/";
 
     @GET("/mysql/bills/list")
     void  billList(Callback<List<Bill>> res);

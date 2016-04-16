@@ -37,6 +37,7 @@ public class LoginActivity extends AppCompatActivity {
     @Bind(R.id.sign_in)
     Button mBntSingIn;
 
+    ProgressDialog dialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,7 +61,8 @@ public class LoginActivity extends AppCompatActivity {
         ButterKnife.unbind(this);
         super.onDestroy();
     }
-    ProgressDialog dialog;
+
+
     @OnClick(R.id.sign_in)
     public void signIn(){
         dialog = new ProgressDialog(this);

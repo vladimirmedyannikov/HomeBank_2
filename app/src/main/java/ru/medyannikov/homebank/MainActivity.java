@@ -4,7 +4,10 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -28,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
     DrawerLayout mNavigationDrawer;
 
     private Fragment mFragment;
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,8 +41,9 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         DataManager.auth();
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        setupToolBar();
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -54,7 +59,15 @@ public class MainActivity extends AppCompatActivity {
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, ProfileFragment.getInstance(), TAG_FRAGMENT).addToBackStack(null).commit();
     }
 
-
+    private void setupToolBar(){
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null){
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_24dp);
+        }
+        setTitle("");
+    }
 
     private void initNavigationDrawer(){
         if (mNavigationView != null){
@@ -72,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
                             break;
                     }
                     if (mFragment != null) {
-                        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, mFragment, TAG_FRAGMENT).addToBackStack(null).commit();
+                        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, mFragment, TAG_FRAGMENT).commit();
                     }
                     mNavigationDrawer.closeDrawers();
                     return false;
@@ -92,7 +105,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-
+        if (id == android.R.id.home){
+            mNavigationDrawer.openDrawer(GravityCompat.START);
+        }
         if (id == R.id.action_settings) {
             return true;
         }
@@ -100,5 +115,9 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-
+    @Override
+    public void onBackPressed() {
+        //getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        super.onBackPressed();
+    }
 }

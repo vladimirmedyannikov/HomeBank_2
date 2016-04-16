@@ -60,7 +60,7 @@ public class ProfileFragment extends Fragment {
         mFloatingActionButton.setImageResource(R.drawable.ic_assignment_24dp);
         mFloatingActionButton.setLayoutParams(params);
 
-        Account user = DataManager.getUser();
+        Account user = DataManager.getAccount();
         ((MainActivity)getActivity()).setTitle("Профиль");
         if (user != null) {
             firstName.setText(user.getFullName());

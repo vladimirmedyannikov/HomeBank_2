@@ -4,13 +4,17 @@ import android.content.SharedPreferences;
 import android.widget.Toast;
 
 import com.activeandroid.query.Select;
+import com.birbit.android.jobqueue.JobManager;
 import com.squareup.otto.Bus;
+import com.squareup.otto.ThreadEnforcer;
 
 import java.util.List;
 
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
+import ru.medyannikov.homebank.data.job.FetchBillJob;
+import ru.medyannikov.homebank.data.job.InsertBillJob;
 import ru.medyannikov.homebank.data.managers.events.LoginFailedEvent;
 import ru.medyannikov.homebank.data.managers.events.LoginSuccessEvent;
 import ru.medyannikov.homebank.data.managers.events.NetworkStatusError;
@@ -34,6 +38,8 @@ public class DataManager {
     private static DataManager instance = new DataManager();
     private static SharedPreferences sharedPreferences;
     private static Account userModel;
+    private static AccountManager accountManager;
+    private static JobManager jobManager;
 
     public static DataManager getInstance(){
         if (instance == null){
@@ -43,9 +49,10 @@ public class DataManager {
     }
     private static Bus mBus;
     private DataManager(){
-        mBus = new Bus();
+        mBus = new Bus(ThreadEnforcer.ANY);
         mBus.register(this);
         sharedPreferences = AndroidApplication.getSharedPreferences();
+        jobManager = AndroidApplication.getJobManager();
     }
 
     public static String getToken(){
@@ -94,6 +101,11 @@ public class DataManager {
         service.getUserModel(a);
     }
 
+    /**
+     * Bus Event LoginSuccessEvent and LoginFailedEvent
+     * @param login
+     * @param password
+     */
     public static void signIn(String login, String password) {
         RestService service = RestFactory.getRestService();
         Callback<TokenModel> callback = new Callback<TokenModel>() {
@@ -107,7 +119,7 @@ public class DataManager {
             @Override
             public void failure(RetrofitError error) {
                 error.printStackTrace();
-                if (error == null) return;
+                if (error.getResponse() == null) return;
                 if (error.getResponse().getStatus() == 403){
                     Toast.makeText(AndroidApplication.getContext(), "Логин или пароль неверны!", Toast.LENGTH_LONG).show();
                 }
@@ -131,7 +143,7 @@ public class DataManager {
         }
         List<Bill> billList = new Select()
                 .from(Bill.class)
-                .where("idUser = ?", DataManager.getUser().getId())
+                .where("account = ?", DataManager.getAccount().getId())
                 .execute();
 /*        billList.add(new Bill());
         billList.add(new Bill());*/
@@ -175,7 +187,7 @@ public class DataManager {
         }
     }
 
-    public static Account getUser(){
+    public static Account getAccount(){
         if (userModel == null) {Toast.makeText(AndroidApplication.getContext(),"null user",Toast.LENGTH_SHORT).show();}
         return userModel;
     }
@@ -194,8 +206,8 @@ public class DataManager {
                         userModel = userDb;
                     }
                     else{
-                        userDb.copyParam(user);
-                        userDb.save();
+                        //userDb.copyParam(user);
+                        //userDb.save();
                     }
                 }
                 userModel = userDb;
@@ -215,10 +227,18 @@ public class DataManager {
     public static List<Operation> getOperations(Bill bill){
         List<Operation> operationList = new Select()
                 .from(Operation.class)
-                .where("idBill = ?", bill)
+                .where("bill = ?", bill)
                 .execute();
         return operationList;
     }
 
+    public static void fetchBillAsync(){
+        AndroidApplication.getJobManager()
+                .addJobInBackground(new FetchBillJob(DataManager.getAccount()));
+    }
 
+    public static void sendBillAsync(Bill bill){
+        AndroidApplication.getJobManager()
+                .addJobInBackground(new InsertBillJob(bill, DataManager.getAccount()));
+    }
 }

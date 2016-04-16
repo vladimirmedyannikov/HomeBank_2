@@ -7,6 +7,8 @@ import android.widget.Toast;
 
 import com.activeandroid.ActiveAndroid;
 import com.activeandroid.query.Select;
+import com.birbit.android.jobqueue.JobManager;
+import com.birbit.android.jobqueue.config.Configuration;
 
 import java.util.List;
 
@@ -20,6 +22,7 @@ public class AndroidApplication extends Application {
 
     private static SharedPreferences sharedPreferences;
     private static Context context;
+    private static JobManager jobManager;
 
     public static Context getContext(){
         return context;
@@ -32,10 +35,24 @@ public class AndroidApplication extends Application {
         sharedPreferences = getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
         context = this;
         DataManager.initializeUser();
+        configureJobManager();
     }
 
     public static SharedPreferences getSharedPreferences(){
         return sharedPreferences;
+    }
+
+    public void configureJobManager(){
+        Configuration.Builder builder = new Configuration.Builder(this)
+                .minConsumerCount(1)
+                .maxConsumerCount(3)
+                .loadFactor(3)
+                .consumerKeepAlive(120);
+        jobManager = new JobManager(builder.build());
+    }
+
+    public static JobManager getJobManager(){
+        return jobManager;
     }
 
 

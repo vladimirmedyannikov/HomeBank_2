@@ -1,5 +1,7 @@
 package ru.medyannikov.homebank.ui.adapters;
 
+import android.os.AsyncTask;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,6 +37,8 @@ public class BillAdapter extends RecyclerView.Adapter<BillViewHolder> {
         holder.aboutBill.setText(bill.getAbout());
         holder.summValue.setText(bill.getValue().toString());
         holder.itemView.setId(bill.getIdBill());
+        holder.setBill(bill);
+
     }
 
     @Override
@@ -46,4 +50,14 @@ public class BillAdapter extends RecyclerView.Adapter<BillViewHolder> {
     public int getItemCount() {
         return billList.size();
     }
+
+    public Bill getBill(int position) {
+        return billList.get(position);
+    }
+
+    public void insert(Bill bill){
+        billList.add(bill);
+    }
+
+
 }
