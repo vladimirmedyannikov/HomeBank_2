@@ -1,6 +1,7 @@
 package ru.medyannikov.homebank.data.managers;
 
 import android.content.SharedPreferences;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.activeandroid.query.Select;
@@ -14,7 +15,9 @@ import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 import ru.medyannikov.homebank.data.job.FetchBillJob;
+import ru.medyannikov.homebank.data.job.FetchOperationJob;
 import ru.medyannikov.homebank.data.job.InsertBillJob;
+import ru.medyannikov.homebank.data.job.InsertOperationJob;
 import ru.medyannikov.homebank.data.managers.events.LoginFailedEvent;
 import ru.medyannikov.homebank.data.managers.events.LoginSuccessEvent;
 import ru.medyannikov.homebank.data.managers.events.NetworkStatusError;
@@ -145,8 +148,6 @@ public class DataManager {
                 .from(Bill.class)
                 .where("account = ?", DataManager.getAccount().getId())
                 .execute();
-/*        billList.add(new Bill());
-        billList.add(new Bill());*/
         return billList;
     }
 
@@ -171,6 +172,21 @@ public class DataManager {
         if (NetworkStatusChecker.isNetworkAvailable(AndroidApplication.getContext())) {
             service.getUserModel(a);
         }
+    }
+
+    public static void insertBill(Bill bill){
+        RestService service = RestFactory.getRestService();
+        service.createBill(bill, new Callback<Bill>() {
+            @Override
+            public void success(Bill bill, Response response) {
+                Log.e("lol", response.toString());
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                Log.e("lol", error.toString());
+            }
+        });
     }
 
     public static void initializeUser(){
@@ -227,7 +243,14 @@ public class DataManager {
     public static List<Operation> getOperations(Bill bill){
         List<Operation> operationList = new Select()
                 .from(Operation.class)
-                .where("bill = ?", bill)
+                .where("idBill = ?", bill.getId())
+                .execute();
+        return operationList;
+    }
+
+    public static List<Operation> getAllOperations(){
+        List<Operation> operationList = new Select()
+                .from(Operation.class)
                 .execute();
         return operationList;
     }
@@ -240,5 +263,23 @@ public class DataManager {
     public static void sendBillAsync(Bill bill){
         AndroidApplication.getJobManager()
                 .addJobInBackground(new InsertBillJob(bill, DataManager.getAccount()));
+    }
+
+    public static void fetchOperationAsync(Bill bill){
+        AndroidApplication.getJobManager()
+                .addJobInBackground(new FetchOperationJob(bill, DataManager.getAccount()));
+    }
+
+    public static Bill getBill(long bill) {
+        List<Bill> b = new Select()
+                .from(Bill.class)
+                .where("id = ?", bill)
+                .execute();
+        return b.get(0);
+    }
+
+    public static void sendOperationAsync(Operation operation) {
+        AndroidApplication.getJobManager()
+                .addJobInBackground(new InsertOperationJob(operation, DataManager.getAccount()));
     }
 }

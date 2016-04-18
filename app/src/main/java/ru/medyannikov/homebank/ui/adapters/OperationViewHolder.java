@@ -14,6 +14,7 @@ public class OperationViewHolder extends RecyclerView.ViewHolder implements View
     protected TextView sync;
     protected TextView value;
     protected TextView date;
+    protected TextView bill_name;
 
     public OperationViewHolder(View itemView) {
         super(itemView);
@@ -21,6 +22,7 @@ public class OperationViewHolder extends RecyclerView.ViewHolder implements View
         sync = (TextView) itemView.findViewById(R.id.operatSync);
         value = (TextView) itemView.findViewById(R.id.operatValue);
         date = (TextView) itemView.findViewById(R.id.operatDate);
+        bill_name = (TextView) itemView.findViewById(R.id.operatBillName);
     }
 
     @Override

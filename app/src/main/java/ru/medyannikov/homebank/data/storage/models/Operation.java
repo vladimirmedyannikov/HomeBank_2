@@ -18,8 +18,8 @@ public class Operation extends Model {
     @Expose
     private int idOperation;
 
-    @Column(name = "bill")
-    @SerializedName("bill")
+    @Column(name = "idBill", onDelete = Column.ForeignKeyAction.CASCADE)
+    @SerializedName("idBill")
     @Expose
     private Bill bill;
 
@@ -48,9 +48,13 @@ public class Operation extends Model {
     private int sync;
 
     public Operation() {
+        super();
+        dateCreated = new Date();
+        sync = 0;
     }
 
     public Operation(String about, Bill bill, Date dateCreated, int idOperation, int sync) {
+        super();
         this.about = about;
         this.bill = bill;
         this.dateCreated = dateCreated;

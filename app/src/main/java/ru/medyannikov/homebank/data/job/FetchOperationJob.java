@@ -1,50 +1,38 @@
 package ru.medyannikov.homebank.data.job;
 
-
-
-import android.util.Log;
-
 import com.birbit.android.jobqueue.Params;
 import com.birbit.android.jobqueue.RetryConstraint;
 
-import java.util.Date;
+import java.util.List;
 
 import ru.medyannikov.homebank.data.managers.DataManager;
-import ru.medyannikov.homebank.data.managers.events.BillInsertEvent;
+import ru.medyannikov.homebank.data.managers.events.OperationFetchEvent;
 import ru.medyannikov.homebank.data.storage.models.Account;
 import ru.medyannikov.homebank.data.storage.models.Bill;
+import ru.medyannikov.homebank.data.storage.models.Operation;
 
 /**
- * Created by Vladimir on 28.03.2016.
+ * Created by vladimir on 18.04.16.
  */
-public class InsertBillJob extends BaseJob {
-    private Bill newBill;
+public class FetchOperationJob extends BaseJob {
+    private Bill bill;
     private Account account;
 
-    public InsertBillJob(Bill insertBill, Account currentAccount) {
+    public FetchOperationJob(Bill bill, Account currentAccount) {
         super(new Params(BACKGROUND).requireNetwork().persist());
-        newBill = insertBill;
-        account = currentAccount;
+        this.account = currentAccount;
+        this.bill = bill;
     }
 
-    /**
-     * Save bill on DB
-     */
     @Override
     public void onAdded() {
-        newBill.setDate(new Date(System.currentTimeMillis() + 1));
-        newBill.setAccount(account);
-        newBill.save();
-        DataManager.getBus().post(new BillInsertEvent());
+        List<Operation> operationList = DataManager.getOperations(bill);
+        DataManager.getBus().post(new OperationFetchEvent(operationList));
     }
 
-    /**
-     * Save bill in the remote server
-     * @throws Throwable
-     */
     @Override
     public void onRun() throws Throwable {
-        DataManager.insertBill(newBill);
+
     }
 
     @Override
@@ -54,7 +42,6 @@ public class InsertBillJob extends BaseJob {
 
     @Override
     protected RetryConstraint shouldReRunOnThrowable(Throwable throwable, int runCount, int maxRunCount) {
-        return null;
+        return RetryConstraint.createExponentialBackoff(runCount, 1500);
     }
-
 }

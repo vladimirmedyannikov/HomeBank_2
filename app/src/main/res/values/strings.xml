@@ -19,7 +19,7 @@
     <string name="drawer_menu_bills">Счета</string>
 
     <string-array name="operation_tab">
-        <item>Operation</item>
-        <item>Chart</item>
+        <item>Операции</item>
+        <item>График</item>
     </string-array>
 </resources>

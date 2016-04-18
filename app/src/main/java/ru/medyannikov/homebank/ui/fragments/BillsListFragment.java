@@ -63,7 +63,6 @@ public class BillsListFragment extends Fragment implements View.OnClickListener 
         return fragment;
     }
 
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -81,7 +80,6 @@ public class BillsListFragment extends Fragment implements View.OnClickListener 
             @Override
             public void onRefresh() {
                 DataManager.fetchBillAsync();
-                //refreshBill();
             }
         });
 
@@ -96,6 +94,8 @@ public class BillsListFragment extends Fragment implements View.OnClickListener 
                 int position = viewHolder.getAdapterPosition();
                 Bill bill = adapter.getBill(position);
                 bill.delete();
+
+                adapter.notifyItemRemoved(position);
                 billList.remove(bill);
             }
         });
@@ -156,9 +156,9 @@ public class BillsListFragment extends Fragment implements View.OnClickListener 
 
     @Override
     public void onDestroy() {
-        //DataManager.getBus().unregister(this);
         super.onDestroy();
     }
+
 
     @Subscribe
     public void onEvent(BillInsertEvent event){
@@ -209,5 +209,11 @@ public class BillsListFragment extends Fragment implements View.OnClickListener 
     public void onDestroyView() {
         DataManager.getBus().unregister(this);
         super.onDestroyView();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        DataManager.fetchBillAsync();
     }
 }

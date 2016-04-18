@@ -2,12 +2,17 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="@dimen/spacing_min">
+    android:padding="@dimen/spacing_min"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".ui.activity.OperationActivity">
     <Spinner
-        android:id="@+id/operat_type"
+        android:id="@+id/editSpinerBill"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-    </Spinner>
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:spinnerMode="dialog"
+        style="@style/Widget.AppCompat.Spinner.Underlined"
+        android:hint="Text"/>
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -15,7 +20,8 @@
             android:id="@+id/operat_value"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Value"/>
+            android:inputType="numberDecimal"
+            android:hint="Сумма"/>
     </android.support.design.widget.TextInputLayout>
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
@@ -24,6 +30,7 @@
             android:id="@+id/operat_about"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="About"/>
+            android:inputType="text"
+            android:hint="Описание"/>
     </android.support.design.widget.TextInputLayout>
 </LinearLayout>

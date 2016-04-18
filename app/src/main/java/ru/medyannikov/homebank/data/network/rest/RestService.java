@@ -2,11 +2,12 @@ package ru.medyannikov.homebank.data.network.rest;
 
 import java.util.List;
 import retrofit.Callback;
+import retrofit.http.Body;
 import retrofit.http.Field;
 import retrofit.http.FormUrlEncoded;
 import retrofit.http.GET;
 import retrofit.http.POST;
-import ru.medyannikov.homebank.data.network.rest.models.Bill;
+import ru.medyannikov.homebank.data.storage.models.Bill;
 import ru.medyannikov.homebank.data.storage.models.TokenModel;
 import ru.medyannikov.homebank.data.storage.models.Account;
 
@@ -15,7 +16,8 @@ import ru.medyannikov.homebank.data.storage.models.Account;
  * Created by Vladimir on 07.03.2016.
  */
 public interface RestService {
-    String BASE_URL = "http://mangystapi.ru:3101/";
+    //String BASE_URL = "http://mangystapi.ru:3101/";
+    String BASE_URL = "http://mangyst.ddns.net:3101/";
 
     @GET("/mysql/bills/list")
     void  billList(Callback<List<Bill>> res);
@@ -38,5 +40,8 @@ public interface RestService {
     void signIn(@Field("grant_type") String grantType, @Field("client_id") String clientId,
                       @Field("client_secret") String clientSecret, @Field("username") String username,
                       @Field("password") String password, Callback<TokenModel> callback);
+
+    @POST("/mysql/bills")
+    void createBill(@Body Bill bill, Callback<Bill> cb);
 
 }

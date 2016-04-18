@@ -48,7 +48,7 @@ public class BillViewHolder extends RecyclerView.ViewHolder implements View.OnCl
                 .beginTransaction()
                 .replace(R.id.fragment_container, OperationActivity.getInstance(), "")
                 .commit();*/
-        intent.putExtra(Bill.BILL_EXTRA, bill);
+        intent.putExtra(Bill.BILL_EXTRA, bill.getId());
         v.getContext().startActivity(intent);
     }
 }

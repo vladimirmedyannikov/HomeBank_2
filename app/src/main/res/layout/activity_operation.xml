@@ -28,11 +28,11 @@
             android:layout_height="wrap_content">
         </android.support.design.widget.TabLayout>
 
-        <android.support.v4.view.ViewPager
+        <ru.medyannikov.homebank.ui.view.CustomViewPager
             android:id="@+id/view_pager"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-        </android.support.v4.view.ViewPager>
+        </ru.medyannikov.homebank.ui.view.CustomViewPager>
 </LinearLayout>
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_operation"
@@ -40,5 +40,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        android:src="@android:drawable/ic_dialog_email" />
+        android:src="@android:drawable/ic_dialog_email"
+        app:layout_behavior="ru.medyannikov.homebank.ui.view.behavior.FloatingActionButtonBehavior"/>
 </android.support.design.widget.CoordinatorLayout>

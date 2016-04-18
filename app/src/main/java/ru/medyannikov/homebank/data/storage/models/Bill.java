@@ -10,6 +10,8 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
+import ru.medyannikov.homebank.data.managers.DataManager;
+
 /**
  * Created by Vladimir on 16.03.2016.
  */
@@ -99,5 +101,25 @@ public class Bill extends Model implements Serializable {
 
     public void setValue(Double value) {
         this.value = value;
+    }
+
+    @Override
+    public String toString() {
+        return this.getName();
+    }
+
+    public void calcucateSumm() {
+        List<Operation> list = getOperation();
+        double sum = 0;
+        for(Operation op: list){
+           sum += op.getValue();
+        }
+        this.value = sum;
+        this.save();
+
+    }
+
+    public List<Operation> getOperation(){
+        return getMany(Operation.class, "idBill");
     }
 }

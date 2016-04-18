@@ -1,12 +1,14 @@
 package ru.medyannikov.homebank.ui.adapters;
 
 import android.support.v7.widget.RecyclerView;
+import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
-import java.util.zip.Inflater;
 
 import ru.medyannikov.homebank.R;
 import ru.medyannikov.homebank.data.storage.models.Operation;
@@ -31,12 +33,18 @@ public class OperationAdapter extends RecyclerView.Adapter<OperationViewHolder> 
     public void onBindViewHolder(OperationViewHolder holder, int position) {
         holder.about.setText(listOperation.get(position).getAbout());
         holder.value.setText(listOperation.get(position).getValue().toString());
-        holder.date.setText(listOperation.get(position).getDateCreated().toString());
+        String dateText = new DateFormat().format("dd-MM-yyyy hh:mm",listOperation.get(position).getDateCreated()).toString();
+        holder.date.setText(dateText);
+        holder.bill_name.setText(listOperation.get(position).getBill().getName());
         holder.itemView.setId(listOperation.get(position).getIdOperation());
     }
 
     @Override
     public int getItemCount() {
         return listOperation.size();
+    }
+
+    public Operation getOperation(int position) {
+        return listOperation.get(position);
     }
 }
