@@ -6,6 +6,7 @@ import retrofit.http.Body;
 import retrofit.http.Field;
 import retrofit.http.FormUrlEncoded;
 import retrofit.http.GET;
+import retrofit.http.Headers;
 import retrofit.http.POST;
 import ru.medyannikov.homebank.data.storage.models.Bill;
 import ru.medyannikov.homebank.data.storage.models.TokenModel;
@@ -42,6 +43,7 @@ public interface RestService {
                       @Field("password") String password, Callback<TokenModel> callback);
 
     @POST("/mysql/bills")
+    @Headers({ "Content-Type: application/json;charset=UTF-8"})
     void createBill(@Body Bill bill, Callback<Bill> cb);
 
 }

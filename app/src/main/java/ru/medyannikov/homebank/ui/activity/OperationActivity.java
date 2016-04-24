@@ -39,6 +39,7 @@ public class OperationActivity extends AppCompatActivity implements View.OnClick
         billId = getIntent().getLongExtra(Bill.BILL_EXTRA, 0);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        setTitle("");
         ButterKnife.bind(this);
 
         bill = DataManager.getBill(billId);

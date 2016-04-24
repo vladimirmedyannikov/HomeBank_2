@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">HomeBank</string>
+    <string name="gcm_defaultSenderId">632073359973</string>
+    <string name="google_app_id">632073359973</string>
     <string name="action_settings">Settings</string>
     <string name="header_reating">100</string>
     <string name="header_login">Vladimir Medyannikov</string>
@@ -17,6 +19,8 @@
     <string name="user_id">ru.medyannikov.homebank.user_id</string>
     <string name="fragment.profile.firstname_label">Имя</string>
     <string name="drawer_menu_bills">Счета</string>
+    <string name="activity.operation.bill_name">Счет:</string>
+    <string name="activity.operation.bill_value">Сумма:</string>
 
     <string-array name="operation_tab">
         <item>Операции</item>

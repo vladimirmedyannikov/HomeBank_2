@@ -50,9 +50,7 @@ public class Bill extends Model implements Serializable {
 
     public Bill() {
         super();
-        name = "Unknow";
-        about = "Thi is a new bill";
-        value = 1832.4;
+        value = 0.0;
     }
 
     public String getAbout() {

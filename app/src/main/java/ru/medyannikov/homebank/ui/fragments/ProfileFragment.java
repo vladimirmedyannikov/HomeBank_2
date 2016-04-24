@@ -55,7 +55,7 @@ public class ProfileFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) mFloatingActionButton.getLayoutParams();
-        params.setAnchorId(R.id.coordinator_container);
+        params.setAnchorId(R.id.fragment_container);
         params.anchorGravity = Gravity.BOTTOM | Gravity.RIGHT;
         mFloatingActionButton.setImageResource(R.drawable.ic_assignment_24dp);
         mFloatingActionButton.setLayoutParams(params);

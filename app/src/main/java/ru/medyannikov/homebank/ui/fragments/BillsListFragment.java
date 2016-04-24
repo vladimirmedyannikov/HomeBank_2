@@ -3,7 +3,7 @@ package ru.medyannikov.homebank.ui.fragments;
 
 
 import android.content.DialogInterface;
-import android.content.Loader;
+import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -12,6 +12,8 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
@@ -24,6 +26,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.activeandroid.content.ContentProvider;
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
@@ -43,7 +46,7 @@ import ru.medyannikov.homebank.ui.adapters.BillAdapter;
 /**
  * Created by Vladimir on 07.03.2016.
  */
-public class BillsListFragment extends Fragment implements View.OnClickListener {
+public class BillsListFragment extends Fragment implements View.OnClickListener, LoaderManager.LoaderCallbacks<Cursor> {
     @Bind(R.id.bills_recyclerview)
     RecyclerView recyclerView;
     @Bind(R.id.bills_swipe)
@@ -94,7 +97,6 @@ public class BillsListFragment extends Fragment implements View.OnClickListener 
                 int position = viewHolder.getAdapterPosition();
                 Bill bill = adapter.getBill(position);
                 bill.delete();
-
                 adapter.notifyItemRemoved(position);
                 billList.remove(bill);
             }
@@ -119,13 +121,14 @@ public class BillsListFragment extends Fragment implements View.OnClickListener 
         mFloatingActionButton.setImageResource(R.drawable.ic_add_24dp);
         mFloatingActionButton.setLayoutParams(params);
         mFloatingActionButton.setOnClickListener(this);
+        //getLoaderManager().initLoader(0,null,this);
     }
-/**
- * Fab listener
- * */
+    /**
+     * Fab listener
+     * */
     @Override
     public void onClick(View v) {
-        AlertDialog.Builder dialog = new AlertDialog.Builder(getContext());
+        AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
         View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_add_bill,null,false);
         final EditText nameBill = (EditText) view.findViewById(R.id.billName);
         final EditText aboutBill = (EditText) view.findViewById(R.id.billAbout);
@@ -174,6 +177,7 @@ public class BillsListFragment extends Fragment implements View.OnClickListener 
 
             @Override
             protected void onPostExecute(List<Bill> bills) {
+                billList = bills;
                 adapter = new BillAdapter(bills);
                 recyclerView.setAdapter(adapter);
                 adapter.notifyDataSetChanged();
@@ -197,6 +201,7 @@ public class BillsListFragment extends Fragment implements View.OnClickListener 
 
             @Override
             protected void onPostExecute(List<Bill> bills) {
+                billList = bills;
                 adapter = new BillAdapter(bills);
                 recyclerView.setAdapter(adapter);
                 adapter.notifyDataSetChanged();
@@ -215,5 +220,24 @@ public class BillsListFragment extends Fragment implements View.OnClickListener 
     public void onResume() {
         super.onResume();
         DataManager.fetchBillAsync();
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        return new CursorLoader(getActivity(),
+                ContentProvider.createUri(Bill.class, null),
+                null, null, null, null);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        if (data.getCount() > 0){
+
+        }
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+
     }
 }

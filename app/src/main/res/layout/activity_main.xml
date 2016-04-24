@@ -12,7 +12,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
     tools:context="ru.medyannikov.homebank.MainActivity">
 
     <android.support.design.widget.AppBarLayout
@@ -30,7 +29,7 @@
     </android.support.design.widget.AppBarLayout>
 
     <FrameLayout
-        android:fitsSystemWindows="true"
+
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/fragment_container"
@@ -51,6 +50,6 @@
         android:id="@+id/navigation_view"
         app:headerLayout="@layout/layout_header"
         android:layout_gravity="start"
-        app:menu="@menu/drawer_menu"/>
+        app:menu="@menu/drawer_menu" />
 
 </android.support.v4.widget.DrawerLayout>
