@@ -1,13 +1,10 @@
-package ru.medyannikov.homebank;
+package ru.medyannikov.homebank.ui.main;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.database.Cursor;
 import android.os.Bundle;
-import android.os.CancellationSignal;
-import android.provider.UserDictionary;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -16,24 +13,26 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import javax.inject.Inject;
+
 import butterknife.Bind;
-import butterknife.ButterKnife;
+import ru.medyannikov.homebank.R;
 import ru.medyannikov.homebank.data.gcm.RegistrationIntentService;
 import ru.medyannikov.homebank.data.managers.DataManager;
 
-import ru.medyannikov.homebank.ui.AndroidApplication;
-import ru.medyannikov.homebank.ui.fragments.BillsListFragment;
-import ru.medyannikov.homebank.ui.fragments.ProfileFragment;
+import ru.medyannikov.homebank.di.component.AndroidApplicationComponent;
+import ru.medyannikov.homebank.ui.base.BaseActivity;
+import ru.medyannikov.homebank.ui.main.fragments.billListFragment.BillsListFragment;
+import ru.medyannikov.homebank.ui.main.fragments.profileFragment.ProfileFragment;
 import ru.medyannikov.homebank.utils.PlayService;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity implements MainActivityView{
     private static final String TAG_FRAGMENT = "current_fragment";
 
     @Bind(R.id.navigation_view)
@@ -42,36 +41,33 @@ public class MainActivity extends AppCompatActivity {
     @Bind(R.id.navigation_drawer)
     DrawerLayout mNavigationDrawer;
 
+    /*@Inject
+    SharedPreferences sharedPreferences;*/
+
+    @Inject MainActivityPresenter presenter;
+
     private Fragment mFragment;
     private Toolbar toolbar;
     private boolean isReceiverRegistred;
     private BroadcastReceiver mRegBroadcastReceiver;
 
+    private MainActivityComponent component;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        String[] mProjection = new String[]{"word"};
-        String mSelectionClause = null;
-        String[] mSelectionArgs = new String[]{""};
-        String mSortOrder = "";
-
-       /* Cursor mCursor = getContentResolver().query(
-                UserDictionary.Words.CONTENT_URI,   // The content URI of the words table
-                mProjection,                        // The columns to return for each row
-                mSelectionClause,                    // Selection criteria
-                mSelectionArgs,                     // Selection criteria
-                mSortOrder);
-        int count = mCursor.getCount();*/
-        ButterKnife.bind(this);
-        DataManager.auth();
-
+        component = DaggerMainActivityComponent.builder()
+                .mainModule(new MainModule(this))
+                .build();
+        component.inject(this);
+        presenter.onCreate();
+        //AndroidApplication.component().inject(this);
         setupToolBar();
 
         mRegBroadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                boolean token = AndroidApplication.getSharedPreferences().getBoolean(RegistrationIntentService.SENT_TOKEN_TO_SERVER, false);
+                boolean token = false;//sharedPreferences.getBoolean(RegistrationIntentService.SENT_TOKEN_TO_SERVER, false);
                 if (token){
                     Log.d("token", "token registred");
                 }
@@ -91,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 //testRest();
-                DataManager.auth();
+                DataManager.getInstance().auth();
 //               Snackbar.make(view, AndroidApplication.getUser().getEmail(), Snackbar.LENGTH_LONG)
                 //                      .setAction("Action", null).show();
             }
@@ -99,6 +95,10 @@ public class MainActivity extends AppCompatActivity {
         initNavigationDrawer();
         if (savedInstanceState == null)
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, ProfileFragment.getInstance(), TAG_FRAGMENT).addToBackStack(null).commit();
+    }
+
+    public MainActivityComponent getComponent(){
+        return component;
     }
 
     private void registerReceiver() {
@@ -114,6 +114,12 @@ public class MainActivity extends AppCompatActivity {
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegBroadcastReceiver);
         isReceiverRegistred = false;
         super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        presenter.onResume();
     }
 
     private void setupToolBar(){
@@ -184,5 +190,30 @@ public class MainActivity extends AppCompatActivity {
         }
         super.onBackPressed();
         //getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+    }
+
+    @Override
+    public int getLayoutId() {
+        return R.layout.activity_main;
+    }
+
+    @Override
+    public void setupComponent(AndroidApplicationComponent component) {
+
+    }
+
+    @Override
+    public void showMessage() {
+
+    }
+
+    @Override
+    public void openProfile() {
+
+    }
+
+    @Override
+    public void openListBills() {
+
     }
 }

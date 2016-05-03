@@ -1,4 +1,4 @@
-package ru.medyannikov.homebank.ui.fragments;
+package ru.medyannikov.homebank.ui.main.fragments.profileFragment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -11,9 +11,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import javax.inject.Inject;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import ru.medyannikov.homebank.MainActivity;
+import ru.medyannikov.homebank.ui.base.BaseFragment;
+import ru.medyannikov.homebank.ui.main.MainActivity;
 import ru.medyannikov.homebank.R;
 import ru.medyannikov.homebank.data.managers.DataManager;
 import ru.medyannikov.homebank.data.storage.models.Account;
@@ -21,8 +24,8 @@ import ru.medyannikov.homebank.data.storage.models.Account;
 /**
  * Created by Vladimir on 13.03.2016.
  */
-public class ProfileFragment extends Fragment {
-    private static ProfileFragment fragment;
+public class ProfileFragment extends BaseFragment implements ProfileView{
+    //private  ProfileFragment fragment;
 
     @Bind(R.id.textview_phone_value)
     TextView phone_value;
@@ -35,6 +38,9 @@ public class ProfileFragment extends Fragment {
     @Bind(R.id.textview_firstname_value)
     TextView firstName;
 
+    @Inject
+    ProfilePresenter profilePresenter;
+
     private FloatingActionButton mFloatingActionButton;
 
     @Nullable
@@ -44,8 +50,7 @@ public class ProfileFragment extends Fragment {
         ButterKnife.bind(this, view);
         mFloatingActionButton = (FloatingActionButton) getActivity().findViewById(R.id.fab);
         getActivity().setTitle(getResources().getString(R.string.drawer_menu_profile));
-
-
+        ((MainActivity)getActivity()).getComponent().inject(this);
         //((MainActivity)getActivity()).lockAppBar(false);
         return view;
     }
@@ -53,15 +58,29 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        profilePresenter.init(this);
+        prepareFragment();
+        profilePresenter.showProfile();
+    }
 
+    private void prepareFragment() {
         CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) mFloatingActionButton.getLayoutParams();
         params.setAnchorId(R.id.fragment_container);
         params.anchorGravity = Gravity.BOTTOM | Gravity.RIGHT;
         mFloatingActionButton.setImageResource(R.drawable.ic_assignment_24dp);
         mFloatingActionButton.setLayoutParams(params);
-
-        Account user = DataManager.getAccount();
         ((MainActivity)getActivity()).setTitle("Профиль");
+    }
+
+    public static Fragment getInstance() {
+        /*if (fragment == null){
+            fragment = new ProfileFragment();
+        }*/
+        return new ProfileFragment();
+    }
+
+    @Override
+    public void onUpdateData(Account user) {
         if (user != null) {
             firstName.setText(user.getFullName());
             phone_value.setText(user.getPhone());
@@ -69,14 +88,5 @@ public class ProfileFragment extends Fragment {
             vk_value.setText(user.getUrlVk());
             about_value.setText(user.getAbout());
         }
-
-
-    }
-
-    public static Fragment getInstance() {
-        if (fragment == null){
-            fragment = new ProfileFragment();
-        }
-        return fragment;
     }
 }

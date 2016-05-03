@@ -23,7 +23,7 @@ public class FetchBillJob extends BaseJob {
 
     @Override
     public void onAdded() {
-        billList = DataManager.getAllBills();
+        billList = DataManager.getInstance().getAllBills();
         DataManager.getBus().post(new BillFetchEvent(billList));
     }
 

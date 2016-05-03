@@ -41,7 +41,7 @@ public class RestFactory {
     }
 
     public static RestService getRestService(){
-        return getRetrofit(RestService.BASE_URL, DataManager.getToken()).create(RestService.class);
+        return getRetrofit(RestService.BASE_URL, DataManager.getInstance().getToken()).create(RestService.class);
     }
 
 }

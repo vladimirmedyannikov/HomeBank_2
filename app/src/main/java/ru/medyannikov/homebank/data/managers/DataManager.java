@@ -1,5 +1,6 @@
 package ru.medyannikov.homebank.data.managers;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 import android.widget.Toast;
@@ -10,6 +11,8 @@ import com.squareup.otto.Bus;
 import com.squareup.otto.ThreadEnforcer;
 
 import java.util.List;
+
+import javax.inject.Inject;
 
 import retrofit.Callback;
 import retrofit.RetrofitError;
@@ -38,11 +41,14 @@ public class DataManager {
     private static final String CLIENT_ID = "mobileV1";
     private static final String CLIENT_SECRET = "abc123456";
     private static final String TYPE_AUTH = "password";
-    private static DataManager instance = new DataManager();
-    private static SharedPreferences sharedPreferences;
+    private static DataManager instance;
+
+    @Inject SharedPreferences sharedPreferences;
+    @Inject JobManager jobManager;
+    @Inject Context context;
     private static Account userModel;
     private static AccountManager accountManager;
-    private static JobManager jobManager;
+    //private static JobManager jobManager;
 
     public static DataManager getInstance(){
         if (instance == null){
@@ -52,27 +58,28 @@ public class DataManager {
     }
     private static Bus mBus;
     private DataManager(){
+        AndroidApplication.component().inject(this);
         mBus = new Bus(ThreadEnforcer.ANY);
         mBus.register(this);
-        sharedPreferences = AndroidApplication.getSharedPreferences();
-        jobManager = AndroidApplication.getJobManager();
+        //jobManager = AndroidApplication.getJobManager();
+        //initializeUser();
     }
 
-    public static String getToken(){
+    public String getToken(){
         return sharedPreferences.getString(ConstantManager.TOKEN_KEY, null);
     }
 
-    public static void setToken(String token){
+    public void setToken(String token){
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(ConstantManager.TOKEN_KEY, token);
         editor.apply();
     }
 
-    public static boolean isLogged(){
+    public boolean isLogged(){
         return getToken() != null;
     }
 
-    public static void logout(){
+    public void logout(){
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(ConstantManager.TOKEN_KEY, null);
         editor.putString(ConstantManager.EMAIL, null);
@@ -84,7 +91,7 @@ public class DataManager {
         return mBus;
     }
 
-    public static void getUserInfo(){
+    public void getUserInfo(){
         RestService service = RestFactory.getRestService();
         Callback<Account> a = new Callback<Account>() {
             @Override
@@ -109,7 +116,7 @@ public class DataManager {
      * @param login
      * @param password
      */
-    public static void signIn(String login, String password) {
+    public void signIn(String login, String password) {
         RestService service = RestFactory.getRestService();
         Callback<TokenModel> callback = new Callback<TokenModel>() {
             @Override
@@ -124,35 +131,35 @@ public class DataManager {
                 error.printStackTrace();
                 if (error.getResponse() == null) return;
                 if (error.getResponse().getStatus() == 403){
-                    Toast.makeText(AndroidApplication.getContext(), "Логин или пароль неверны!", Toast.LENGTH_LONG).show();
+                    //Toast.makeText(AndroidApplication.getContext(), "Логин или пароль неверны!", Toast.LENGTH_LONG).show();
                 }
                 else if (error.getResponse().getStatus() == 400){
-                    Toast.makeText(AndroidApplication.getContext(), "Введенные данные некорректны!", Toast.LENGTH_LONG).show();
+                    //Toast.makeText(AndroidApplication.getContext(), "Введенные данные некорректны!", Toast.LENGTH_LONG).show();
                 }
-                getBus().post(new LoginFailedEvent());
+                getBus().post(new LoginFailedEvent("Ошибка авторизации"));
             }
         };
-        if (NetworkStatusChecker.isNetworkAvailable(AndroidApplication.getContext())) {
+        if (NetworkStatusChecker.isNetworkAvailable(context)) {
             service.signIn(TYPE_AUTH, CLIENT_ID, CLIENT_SECRET, login, password, callback);
         }else{
             getBus().post(new NetworkStatusError());
         }
     }
 
-    public static List<Bill> getAllBills(){
+    public List<Bill> getAllBills(){
         //List<Bill> billList = new ArrayList<>();
-        if (NetworkStatusChecker.isNetworkAvailable(AndroidApplication.getContext())){
+        if (NetworkStatusChecker.isNetworkAvailable(context)){
 
         }
         List<Bill> billList = new Select()
                 .from(Bill.class)
-                .where("account = ?", DataManager.getAccount().getId())
+                .where("account = ?", DataManager.getInstance().getAccount().getId())
                 .execute();
         return billList;
     }
 
 
-    public static void auth(){
+    public void auth(){
         RestService service = RestFactory.getRestService();
         Callback<Account> a = new Callback<Account>() {
             @Override
@@ -169,7 +176,7 @@ public class DataManager {
                 error.printStackTrace();
             }
         };
-        if (NetworkStatusChecker.isNetworkAvailable(AndroidApplication.getContext())) {
+        if (NetworkStatusChecker.isNetworkAvailable(context)) {
             service.getUserModel(a);
         }
     }
@@ -189,9 +196,9 @@ public class DataManager {
         });
     }
 
-    public static void initializeUser(){
+    public void initializeUser(){
         if (isLogged()) {
-            String email = AndroidApplication.getSharedPreferences().getString(ConstantManager.EMAIL, "");
+            String email = sharedPreferences.getString(ConstantManager.EMAIL, "");
             List<Account> userDbList = new Select()
                     .from(Account.class)
                     .where("email = ?", email)
@@ -203,12 +210,12 @@ public class DataManager {
         }
     }
 
-    public static Account getAccount(){
-        if (userModel == null) {Toast.makeText(AndroidApplication.getContext(),"null user",Toast.LENGTH_SHORT).show();}
+    public Account getAccount(){
+        if (userModel == null) {Toast.makeText(context,"null user",Toast.LENGTH_SHORT).show();}
         return userModel;
     }
 
-    public static void setUser(Account user){
+    public void setUser(Account user){
         if (user != null){
             List<Account> userDbList = new Select()
                     .from(Account.class)
@@ -233,7 +240,7 @@ public class DataManager {
                 user.save();
                 Long id = user.getId();
                 userModel = user;
-                SharedPreferences.Editor editor = AndroidApplication.getSharedPreferences().edit();
+                SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putLong(ConstantManager.USER_ID, id).apply();
                 editor.putString(ConstantManager.EMAIL, user.getEmail()).apply();
             }
@@ -255,19 +262,19 @@ public class DataManager {
         return operationList;
     }
 
-    public static void fetchBillAsync(){
-        AndroidApplication.getJobManager()
-                .addJobInBackground(new FetchBillJob(DataManager.getAccount()));
+    public void fetchBillAsync(){
+        jobManager
+                .addJobInBackground(new FetchBillJob(DataManager.getInstance().getAccount()));
     }
 
-    public static void sendBillAsync(Bill bill){
-        AndroidApplication.getJobManager()
-                .addJobInBackground(new InsertBillJob(bill, DataManager.getAccount()));
+    public void sendBillAsync(Bill bill){
+        jobManager
+                .addJobInBackground(new InsertBillJob(bill, DataManager.getInstance().getAccount()));
     }
 
-    public static void fetchOperationAsync(Bill bill){
-        AndroidApplication.getJobManager()
-                .addJobInBackground(new FetchOperationJob(bill, DataManager.getAccount()));
+    public void fetchOperationAsync(Bill bill){
+        jobManager
+                .addJobInBackground(new FetchOperationJob(bill, DataManager.getInstance().getAccount()));
     }
 
     public static Bill getBill(long bill) {
@@ -278,8 +285,8 @@ public class DataManager {
         return b.get(0);
     }
 
-    public static void sendOperationAsync(Operation operation) {
-        AndroidApplication.getJobManager()
-                .addJobInBackground(new InsertOperationJob(operation, DataManager.getAccount()));
+    public void sendOperationAsync(Operation operation) {
+        jobManager
+                .addJobInBackground(new InsertOperationJob(operation, DataManager.getInstance().getAccount()));
     }
 }

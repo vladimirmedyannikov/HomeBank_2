@@ -12,6 +12,8 @@ import com.google.android.gms.iid.InstanceID;
 
 import java.io.IOException;
 
+import javax.inject.Inject;
+
 import ru.medyannikov.homebank.R;
 import ru.medyannikov.homebank.ui.AndroidApplication;
 
@@ -25,13 +27,17 @@ public class RegistrationIntentService extends IntentService {
     private static final String[] TOPICS = {"global"};
     public static final String REGISTRATION_COMPLETE = "registrationComplete";
 
+    @Inject
+    SharedPreferences preferences;
+
     public RegistrationIntentService() {
         super(TAG);
+        ((AndroidApplication)getApplication()).component().inject(this);
     }
+
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        SharedPreferences preferences = AndroidApplication.getSharedPreferences();
 
         InstanceID instanceID = InstanceID.getInstance(this);
         String senderId = getResources().getString(R.string.gcm_defaultSenderId);
@@ -51,7 +57,7 @@ public class RegistrationIntentService extends IntentService {
     }
 
     private void sendRegistrationToServer(String token){
-        AndroidApplication.getSharedPreferences().edit().putBoolean(SENT_TOKEN_TO_SERVER, true).apply();
+        preferences.edit().putBoolean(SENT_TOKEN_TO_SERVER, true).apply();
     }
 
     private void subscripteTopics(String token) throws IOException{

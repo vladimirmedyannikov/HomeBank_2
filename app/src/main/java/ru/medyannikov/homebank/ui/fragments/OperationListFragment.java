@@ -96,7 +96,8 @@ public class OperationListFragment extends Fragment implements View.OnClickListe
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                DataManager.fetchOperationAsync(bill);
+                //TODO
+                //DataManager.fetchOperationAsync(bill);
             }
         });
         return view;
@@ -125,7 +126,7 @@ public class OperationListFragment extends Fragment implements View.OnClickListe
 
         if (getBill() == null){
             spinnerBills.setVisibility(View.VISIBLE);
-            ArrayAdapter adapterBill = new ArrayAdapter(v.getContext(), R.layout.support_simple_spinner_dropdown_item, DataManager.getAllBills());
+            ArrayAdapter adapterBill = new ArrayAdapter(v.getContext(), R.layout.support_simple_spinner_dropdown_item, DataManager.getInstance().getAllBills());
             spinnerBills.setAdapter(adapterBill);
         }
 
@@ -138,12 +139,13 @@ public class OperationListFragment extends Fragment implements View.OnClickListe
                         Operation operation = new Operation();
                         operation.setValue(Double.valueOf(editSumm.getText().toString()));
                         operation.setAbout(editAbout.getText().toString());
-                        operation.setAccount(DataManager.getAccount());
+                        operation.setAccount(DataManager.getInstance().getAccount());
                         if (bill == null) {
                             bill = (Bill) (spinnerBills.getSelectedItem());
                         }
                         operation.setBill(bill);
-                        DataManager.sendOperationAsync(operation);
+                        //TODO
+                        //DataManager.sendOperationAsync(operation);
                     }
                 })
                 .setNegativeButton("Отмена", new DialogInterface.OnClickListener() {

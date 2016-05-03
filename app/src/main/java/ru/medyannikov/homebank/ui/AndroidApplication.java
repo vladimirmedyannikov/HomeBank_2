@@ -12,50 +12,49 @@ import com.birbit.android.jobqueue.config.Configuration;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 import ru.medyannikov.homebank.R;
+import ru.medyannikov.homebank.data.DataModule;
 import ru.medyannikov.homebank.data.managers.DataManager;
+import ru.medyannikov.homebank.di.component.AndroidApplicationComponent;
+
+import ru.medyannikov.homebank.di.component.DaggerAndroidApplicationComponent;
+import ru.medyannikov.homebank.di.module.AndroidApplicationModule;
 
 /**
  * Created by Vladimir on 12.03.2016.
  */
 public class AndroidApplication extends Application {
+    private static AndroidApplicationComponent appComponent;
 
-    private static SharedPreferences sharedPreferences;
-    private static Context context;
-    private static JobManager jobManager;
-
-    public static Context getContext(){
-        return context;
-    }
+    @Inject SharedPreferences sharedPreferences;
 
     @Override
     public void onCreate() {
         super.onCreate();
+        buildComponentAndInject();
         ActiveAndroid.initialize(this);
-        sharedPreferences = getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
-        context = this;
-        DataManager.initializeUser();
-        configureJobManager();
     }
 
-    public static SharedPreferences getSharedPreferences(){
-        return sharedPreferences;
-    }
-
-    public void configureJobManager(){
-        Configuration.Builder builder = new Configuration.Builder(this)
-                .minConsumerCount(1)
-                .maxConsumerCount(3)
-                .loadFactor(3)
-                .consumerKeepAlive(120);
-        jobManager = new JobManager(builder.build());
-    }
-
-    public static JobManager getJobManager(){
-        return jobManager;
+    private void buildComponentAndInject() {
+        appComponent = DaggerAndroidApplicationComponent.builder()
+                .androidApplicationModule(new AndroidApplicationModule(this))
+                .dataModule(new DataModule())
+                .build();
+        appComponent.inject(this);
     }
 
 
+    public static AndroidApplicationComponent component() {return appComponent;}
+
+    public static AndroidApplication get(Context context){
+        return (AndroidApplication) context.getApplicationContext();
+    }
+
+    /*public Context getContext(){
+        return getApplicationContext();
+    }*/
 
 
 }
