@@ -13,6 +13,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.os.AsyncTaskCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
@@ -46,7 +47,7 @@ import ru.medyannikov.homebank.ui.main.MainActivity;
 /**
  * Created by Vladimir on 07.03.2016.
  */
-public class BillsListFragment extends Fragment implements View.OnClickListener, LoaderManager.LoaderCallbacks<Cursor>, BillListView {
+public class BillsListFragment extends Fragment implements View.OnClickListener, BillListView {
     @Bind(R.id.bills_recyclerview)
     RecyclerView recyclerView;
     @Bind(R.id.bills_swipe)
@@ -58,15 +59,15 @@ public class BillsListFragment extends Fragment implements View.OnClickListener,
     private FloatingActionButton mFloatingActionButton;
 
     private List<Bill> billList = new ArrayList<>();
-    private static BillsListFragment fragment;
+    //private static BillsListFragment fragment;
 
     private BillAdapter adapter;
 
     public static BillsListFragment getInstance(){
-        if (fragment == null){
+        /*if (fragment == null){
             fragment = new BillsListFragment();
-        }
-        return fragment;
+        }*/
+        return new BillsListFragment();
     }
 
     @Nullable
@@ -83,12 +84,12 @@ public class BillsListFragment extends Fragment implements View.OnClickListener,
 
         adapter = new BillAdapter(billList);
         recyclerView.setAdapter(adapter);
+        presenter.updateBills();
 
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                //TODO
-                //DataManager.fetchBillAsync();
+                presenter.updateBills();
             }
         });
 
@@ -108,12 +109,6 @@ public class BillsListFragment extends Fragment implements View.OnClickListener,
         itemTouchHelper.attachToRecyclerView(recyclerView);
 
         return view;
-    }
-
-    private void refreshBill() {
-        Toast.makeText(getContext(), "Refresh", Toast.LENGTH_SHORT).show();
-        getLoaderManager().getLoader(0).forceLoad();
-        swipeRefreshLayout.setRefreshing(false);
     }
 
     @Override
@@ -148,6 +143,7 @@ public class BillsListFragment extends Fragment implements View.OnClickListener,
     }
 
     public void refresh(@Nullable Bill bill) {
+        AsyncTaskCompat.executeParallel(
         new AsyncTask<Void, Void, List<Bill>>() {
             @Override
             protected List<Bill> doInBackground(Void... params) {
@@ -162,7 +158,7 @@ public class BillsListFragment extends Fragment implements View.OnClickListener,
                 adapter.notifyDataSetChanged();
             }
 
-        }.execute();
+        });
     }
 
     @Subscribe
@@ -201,29 +197,13 @@ public class BillsListFragment extends Fragment implements View.OnClickListener,
         //DataManager.fetchBillAsync();
     }
 
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return new CursorLoader(getActivity(),
-                ContentProvider.createUri(Bill.class, null),
-                null, null, null, null);
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        if (data.getCount() > 0){
-
-        }
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-
-    }
 
     @Override
     public void updateData(List<Bill> bills) {
-        adapter = new BillAdapter(bills);
+        billList = bills;
+        adapter = new BillAdapter(billList);
         recyclerView.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
     }
 
     @Override
@@ -260,18 +240,18 @@ public class BillsListFragment extends Fragment implements View.OnClickListener,
 
     @Override
     public void showLoading() {
-
+        swipeRefreshLayout.setRefreshing(true);
     }
 
     @Override
     public void hideLoading() {
-
+        swipeRefreshLayout.setRefreshing(false);
     }
 
     @Override
     public void billDeleted(int positionAdapter, Bill bill) {
-        adapter.notifyItemRemoved(positionAdapter);
         billList.remove(bill);
+        adapter.notifyItemRemoved(positionAdapter);
     }
 
     @Override
@@ -281,7 +261,7 @@ public class BillsListFragment extends Fragment implements View.OnClickListener,
 
     @Override
     public void emptyData() {
-
+        //adapter.notifyAll();
     }
 
 }

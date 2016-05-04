@@ -1,6 +1,7 @@
 package ru.medyannikov.homebank.ui.main.fragments.billListFragment;
 
 import android.os.AsyncTask;
+import android.support.v4.os.AsyncTaskCompat;
 
 import com.squareup.otto.Subscribe;
 
@@ -9,6 +10,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import ru.medyannikov.homebank.data.managers.DataManager;
+import ru.medyannikov.homebank.data.managers.events.BillFetchEvent;
 import ru.medyannikov.homebank.data.managers.events.BillInsertEvent;
 import ru.medyannikov.homebank.data.storage.models.Bill;
 import ru.medyannikov.homebank.ui.AndroidApplication;
@@ -45,7 +47,8 @@ public class BillListPresenterImpl implements BillListPresenter {
 
     @Override
     public void onDestroy() {
-
+        manager.getBus().unregister(this);
+        view = null;
     }
 
     @Override
@@ -55,6 +58,7 @@ public class BillListPresenterImpl implements BillListPresenter {
 
     @Override
     public void updateBills() {
+        //view.hideLoading();
         new AsyncTask<Void, Void, List<Bill>>() {
             @Override
             protected List<Bill> doInBackground(Void... params) {
@@ -68,6 +72,7 @@ public class BillListPresenterImpl implements BillListPresenter {
                 }else{
                     view.emptyData();
                 }
+                view.hideLoading();
             }
         }.execute();
     }
@@ -93,5 +98,17 @@ public class BillListPresenterImpl implements BillListPresenter {
     @Subscribe
     public void onEvent(BillInsertEvent event){
         updateBills();
+    }
+
+    @Subscribe
+    public void onEvent(BillFetchEvent event){
+        List<Bill> list = event.getBillList();
+        if (list.size() != 0){
+            view.updateData(list);
+        }
+        else {
+           view.emptyData();
+        }
+        view.hideLoading();
     }
 }

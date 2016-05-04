@@ -44,7 +44,7 @@ public class InsertBillJob extends BaseJob {
      */
     @Override
     public void onRun() throws Throwable {
-        DataManager.insertBill(newBill);
+        //DataManager.insertBill(newBill);
     }
 
     @Override
