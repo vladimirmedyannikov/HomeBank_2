@@ -18,7 +18,6 @@ import butterknife.ButterKnife;
 import ru.medyannikov.homebank.ui.base.BaseFragment;
 import ru.medyannikov.homebank.ui.main.MainActivity;
 import ru.medyannikov.homebank.R;
-import ru.medyannikov.homebank.data.managers.DataManager;
 import ru.medyannikov.homebank.data.storage.models.Account;
 
 /**
@@ -58,7 +57,7 @@ public class ProfileFragment extends BaseFragment implements ProfileView{
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        profilePresenter.init(this);
+        profilePresenter.attachView(this);
         prepareFragment();
         profilePresenter.showProfile();
     }

@@ -52,7 +52,7 @@ public class BillListPresenterImpl implements BillListPresenter {
     }
 
     @Override
-    public void init(BillListView view) {
+    public void attachView(BillListView view) {
         this.view = view;
     }
 

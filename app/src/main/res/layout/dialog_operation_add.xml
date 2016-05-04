@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:padding="@dimen/spacing_min"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".ui.activity.OperationActivity">
+    tools:context=".ui.operationList.OperationActivity">
     <Spinner
         android:id="@+id/editSpinerBill"
         android:layout_width="match_parent"

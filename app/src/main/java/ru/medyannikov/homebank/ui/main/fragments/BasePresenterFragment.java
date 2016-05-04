@@ -8,5 +8,5 @@ public interface BasePresenterFragment<T> {
     void onStop();
     void onResume();
     void onDestroy();
-    void init(T view);
+    void attachView(T view);
 }

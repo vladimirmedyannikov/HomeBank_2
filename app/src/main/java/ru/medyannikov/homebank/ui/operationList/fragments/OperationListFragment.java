@@ -1,4 +1,4 @@
-package ru.medyannikov.homebank.ui.fragments;
+package ru.medyannikov.homebank.ui.operationList.fragments;
 
 import android.content.DialogInterface;
 import android.os.AsyncTask;
@@ -25,6 +25,8 @@ import com.squareup.otto.Subscribe;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import ru.medyannikov.homebank.R;
@@ -33,14 +35,15 @@ import ru.medyannikov.homebank.data.managers.events.OperationFetchEvent;
 import ru.medyannikov.homebank.data.managers.events.OperationInsertEvent;
 import ru.medyannikov.homebank.data.storage.models.Bill;
 import ru.medyannikov.homebank.data.storage.models.Operation;
-import ru.medyannikov.homebank.ui.adapters.BillAdapter;
 import ru.medyannikov.homebank.ui.adapters.OperationAdapter;
+import ru.medyannikov.homebank.ui.base.BaseFragment;
+import ru.medyannikov.homebank.ui.operationList.OperationActivity;
+import ru.medyannikov.homebank.ui.operationList.OperationPresenter;
 
 /**
  * Created by Vladimir on 02.04.2016.
  */
-public class OperationListFragment extends Fragment implements View.OnClickListener {
-    private static Fragment instance;
+public class OperationListFragment extends BaseFragment implements View.OnClickListener, OperationListFragmentView {
     private FloatingActionButton mFloatingActionButton;
     private OperationAdapter adapter;
     private List<Operation> operationList = new ArrayList<>();
@@ -52,14 +55,14 @@ public class OperationListFragment extends Fragment implements View.OnClickListe
     @Bind(R.id.operation_swipe)
     SwipeRefreshLayout swipeRefreshLayout;
 
+    @Inject
+    OperationListFragmentPresenter presenter;
+
     public static Fragment getInstance(Bill bill){
-        if (instance == null){
-            instance = new OperationListFragment();
-        }
-        ((OperationListFragment)instance).setBill(bill);
+        OperationListFragment instance = new OperationListFragment();
+        instance.setBill(bill);
         return instance;
     }
-
 
     public static Fragment getInstance(){
         return getInstance(null);
@@ -70,7 +73,9 @@ public class OperationListFragment extends Fragment implements View.OnClickListe
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_operation_list,null, false);
         ButterKnife.bind(this, view);
-        DataManager.getBus().register(this);
+        ((OperationActivity)getActivity()).getComponent().inject(this);
+        presenter.attachView(this);
+        //DataManager.getBus().register(this);
         mFloatingActionButton = (FloatingActionButton) getActivity().findViewById(R.id.fab_operation);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         initAdapter();
@@ -222,7 +227,7 @@ public class OperationListFragment extends Fragment implements View.OnClickListe
 
     @Override
     public void onDestroyView() {
-        DataManager.getBus().unregister(this);
+        //DataManager.getBus().unregister(this);
         super.onDestroyView();
     }
 

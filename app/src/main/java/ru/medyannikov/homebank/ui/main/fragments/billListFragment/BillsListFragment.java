@@ -3,16 +3,12 @@ package ru.medyannikov.homebank.ui.main.fragments.billListFragment;
 
 
 import android.content.DialogInterface;
-import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
 import android.support.v4.os.AsyncTaskCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
@@ -24,9 +20,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.Toast;
 
-import com.activeandroid.content.ContentProvider;
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
@@ -59,8 +53,6 @@ public class BillsListFragment extends Fragment implements View.OnClickListener,
     private FloatingActionButton mFloatingActionButton;
 
     private List<Bill> billList = new ArrayList<>();
-    //private static BillsListFragment fragment;
-
     private BillAdapter adapter;
 
     public static BillsListFragment getInstance(){
@@ -75,10 +67,10 @@ public class BillsListFragment extends Fragment implements View.OnClickListener,
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_bills_list,null, false);
         ((MainActivity)getActivity()).getComponent().inject(this);
-        presenter.init(this);
+        presenter.attachView(this);
         ButterKnife.bind(this, view);
-        getActivity().setTitle("Счета");
 
+        getActivity().setTitle("Счета");
         mFloatingActionButton = (FloatingActionButton) getActivity().findViewById(R.id.fab);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
@@ -133,57 +125,10 @@ public class BillsListFragment extends Fragment implements View.OnClickListener,
 
     @Override
     public void onDestroy() {
+        presenter.onDestroy();
         super.onDestroy();
     }
 
-
-    @Subscribe
-    public void onEvent(BillInsertEvent event){
-        refresh(event.getBill());
-    }
-
-    public void refresh(@Nullable Bill bill) {
-        AsyncTaskCompat.executeParallel(
-        new AsyncTask<Void, Void, List<Bill>>() {
-            @Override
-            protected List<Bill> doInBackground(Void... params) {
-                return DataManager.getInstance().getAllBills();
-            }
-
-            @Override
-            protected void onPostExecute(List<Bill> bills) {
-                billList = bills;
-                adapter = new BillAdapter(bills);
-                recyclerView.setAdapter(adapter);
-                adapter.notifyDataSetChanged();
-            }
-
-        });
-    }
-
-    @Subscribe
-    public void onEvent(BillFetchEvent event){
-        billList = event.getBillList();
-        ref(billList);
-    }
-
-    private void ref(final List<Bill> list){
-        new AsyncTask<Void, Void, List<Bill>>() {
-            @Override
-            protected List<Bill> doInBackground(Void... params) {
-                return list;
-            }
-
-            @Override
-            protected void onPostExecute(List<Bill> bills) {
-                billList = bills;
-                adapter = new BillAdapter(bills);
-                recyclerView.setAdapter(adapter);
-                adapter.notifyDataSetChanged();
-                swipeRefreshLayout.setRefreshing(false);
-            }
-        }.execute();
-    }
 
     @Override
     public void onDestroyView() {
@@ -192,9 +137,8 @@ public class BillsListFragment extends Fragment implements View.OnClickListener,
 
     @Override
     public void onResume() {
+        presenter.onResume();
         super.onResume();
-        //TODO
-        //DataManager.fetchBillAsync();
     }
 
 
@@ -222,8 +166,6 @@ public class BillsListFragment extends Fragment implements View.OnClickListener,
                         bill.setName(nameBill.getText().toString());
                         bill.setAbout(aboutBill.getText().toString());
                         bill.setAccount(DataManager.getInstance().getAccount());
-                        //TODO
-                        //DataManager.sendBillAsync(bill);
                         presenter.insertBill(bill);
                         dialog.dismiss();
                     }

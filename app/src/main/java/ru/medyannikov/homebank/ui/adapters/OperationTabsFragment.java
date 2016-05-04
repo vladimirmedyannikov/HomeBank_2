@@ -7,7 +7,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 
 import ru.medyannikov.homebank.R;
 import ru.medyannikov.homebank.data.storage.models.Bill;
-import ru.medyannikov.homebank.ui.fragments.OperationListFragment;
+import ru.medyannikov.homebank.ui.operationList.fragments.OperationListFragment;
 
 /**
  * Created by Vladimir on 27.03.2016.

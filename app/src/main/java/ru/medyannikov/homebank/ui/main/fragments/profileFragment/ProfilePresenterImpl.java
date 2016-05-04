@@ -50,7 +50,7 @@ public class ProfilePresenterImpl implements ProfilePresenter {
     }
 
     @Override
-    public void init(ProfileView view) {
+    public void attachView(ProfileView view) {
         this.view = view;
     }
 }
