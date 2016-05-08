@@ -11,7 +11,6 @@ public class OperationPresenterImpl implements OperationPresenter {
 
     @Override
     public void onCreate() {
-        view.initializeTabs();
     }
 
     @Override

@@ -117,4 +117,12 @@ public class Operation extends Model {
     public void setAccount(Account account) {
         this.account = account;
     }
+
+    public void deleteAndCalc(){
+        delete();
+        if (getBill() != null){
+            getBill().calcucateSumm();
+        }
+    }
+
 }

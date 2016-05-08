@@ -15,4 +15,5 @@ public interface BillListView {
     void billDeleted(int positionAdapter, Bill bill);
     void billDeleted();
     void emptyData();
+    void billInserted(Bill bill);
 }

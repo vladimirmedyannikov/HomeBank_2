@@ -21,6 +21,7 @@
     <string name="drawer_menu_bills">Счета</string>
     <string name="activity.operation.bill_name">Счет:</string>
     <string name="activity.operation.bill_value">Сумма:</string>
+    <string name="activity.operation.bill_about">Описание:</string>
 
     <string-array name="operation_tab">
         <item>Операции</item>

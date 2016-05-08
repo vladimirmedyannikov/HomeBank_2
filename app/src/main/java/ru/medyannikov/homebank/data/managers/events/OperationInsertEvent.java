@@ -7,9 +7,9 @@ import ru.medyannikov.homebank.data.storage.models.Operation;
  */
 public class OperationInsertEvent {
     private Operation operation;
-    public OperationInsertEvent()
+    public OperationInsertEvent(Operation operation)
     {
-        //this.operation = operation;
+        this.operation = operation;
     }
 
     public Operation getItem(){

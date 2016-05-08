@@ -3,6 +3,8 @@ package ru.medyannikov.homebank.ui.operationList.fragments;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -46,7 +48,6 @@ import ru.medyannikov.homebank.ui.operationList.OperationPresenter;
 public class OperationListFragment extends BaseFragment implements View.OnClickListener, OperationListFragmentView {
     private FloatingActionButton mFloatingActionButton;
     private OperationAdapter adapter;
-    private List<Operation> operationList = new ArrayList<>();
     private Bill bill;
 
     @Bind(R.id.operation_recyclerview)
@@ -75,49 +76,42 @@ public class OperationListFragment extends BaseFragment implements View.OnClickL
         ButterKnife.bind(this, view);
         ((OperationActivity)getActivity()).getComponent().inject(this);
         presenter.attachView(this);
-        //DataManager.getBus().register(this);
         mFloatingActionButton = (FloatingActionButton) getActivity().findViewById(R.id.fab_operation);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        initAdapter();
+        presenter.updateData(bill);
+        initializeRecyclerView();
+        return view;
+    }
 
+    private void initializeRecyclerView() {
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
             @Override
             public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
                 return false;
             }
-
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
                 int position = viewHolder.getAdapterPosition();
                 Operation operation = adapter.getOperation(position);
-                operation.delete();
-                adapter.notifyItemRemoved(position);
-                operationList.remove(operation);
-                operation.getBill().calcucateSumm();
+                presenter.deleteOperation(operation, position);
             }
         });
         itemTouchHelper.attachToRecyclerView(recyclerView);
-
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                //TODO
-                //DataManager.fetchOperationAsync(bill);
+                presenter.updateData(bill);
             }
         });
-        return view;
-    }
-
-    private void initAdapter() {
-        operationList = DataManager.getOperations(bill);
-        adapter = new OperationAdapter(operationList);
-        recyclerView.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
     }
 
     @Override
     public void onClick(View v) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
+        dialogInsert();
+    }
+
+    private void dialogInsert() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this.getContext());
         View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_operation_add, null, false);
         final Spinner spinnerBills = (Spinner) view.findViewById(R.id.editSpinerBill);
         //Spinner spinnerType = (Spinner) view.findViewById(R.id.operat_type);
@@ -125,13 +119,9 @@ public class OperationListFragment extends BaseFragment implements View.OnClickL
         final EditText editSumm = (EditText) view.findViewById(R.id.operat_value);
         final EditText editAbout = (EditText) view.findViewById(R.id.operat_about);
 
-        /*ArrayAdapter<String> adapter = new ArrayAdapter<String>(v.getContext(),R.layout.support_simple_spinner_dropdown_item,new String[]{"", "Lol"});
-        spinnerType.setAdapter(adapter);
-        spinnerType.setVisibility(View.GONE);*/
-
         if (getBill() == null){
             spinnerBills.setVisibility(View.VISIBLE);
-            ArrayAdapter adapterBill = new ArrayAdapter(v.getContext(), R.layout.support_simple_spinner_dropdown_item, DataManager.getInstance().getAllBills());
+            ArrayAdapter adapterBill = new ArrayAdapter(getContext(), R.layout.support_simple_spinner_dropdown_item, DataManager.getInstance().getAllBills());
             spinnerBills.setAdapter(adapterBill);
         }
 
@@ -149,8 +139,7 @@ public class OperationListFragment extends BaseFragment implements View.OnClickL
                             bill = (Bill) (spinnerBills.getSelectedItem());
                         }
                         operation.setBill(bill);
-                        //TODO
-                        //DataManager.sendOperationAsync(operation);
+                        presenter.insertOperation(operation);
                     }
                 })
                 .setNegativeButton("Отмена", new DialogInterface.OnClickListener() {
@@ -165,13 +154,16 @@ public class OperationListFragment extends BaseFragment implements View.OnClickL
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        initializeFab();
+    }
+
+    private void initializeFab() {
         CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) mFloatingActionButton.getLayoutParams();
         params.setAnchorId(R.id.operation_recyclerview);
         params.anchorGravity = Gravity.BOTTOM | Gravity.RIGHT |Gravity.END;
         mFloatingActionButton.setImageResource(R.drawable.ic_add_24dp);
         mFloatingActionButton.setLayoutParams(params);
         mFloatingActionButton.setOnClickListener(this);
-
     }
 
     public Bill getBill() {
@@ -183,57 +175,48 @@ public class OperationListFragment extends BaseFragment implements View.OnClickL
     }
 
 
-    public void refresh(@Nullable final List<Operation> list) {
-        new AsyncTask<Void, Void, List<Operation>>() {
-            @Override
-            protected List<Operation> doInBackground(Void... params) {
-                operationList = list;
-                return operationList;
-            }
-
-            @Override
-            protected void onPostExecute(List<Operation> list) {
-                adapter = new OperationAdapter(list);
-                recyclerView.setAdapter(adapter);
-                adapter.notifyDataSetChanged();
-            }
-
-        }.execute();
-    }
-
-    @Subscribe
-    public void onEvent(OperationFetchEvent event){
-        refresh(event.getItems());
-        swipeRefreshLayout.setRefreshing(false);
-    }
-
-    @Subscribe
-    public void onEvent(OperationInsertEvent event){
-        new AsyncTask<Void, Void, List<Operation>>() {
-            @Override
-            protected List<Operation> doInBackground(Void... params) {
-                operationList = DataManager.getOperations(bill);
-                return operationList;
-            }
-
-            @Override
-            protected void onPostExecute(List<Operation> list) {
-                adapter = new OperationAdapter(list);
-                recyclerView.setAdapter(adapter);
-                adapter.notifyDataSetChanged();
-            }
-        }.execute();
-    }
-
     @Override
     public void onDestroyView() {
-        //DataManager.getBus().unregister(this);
         super.onDestroyView();
+        presenter.onDestroy();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        initAdapter();
+        //initAdapter();
+    }
+
+    @Override
+    public void setData(final List<Operation> listOperation) {
+        new Runnable(){
+            @Override
+            public void run() {
+                adapter = new OperationAdapter(listOperation);
+                recyclerView.setAdapter(adapter);
+                adapter.notifyDataSetChanged();
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        }.run();
+    }
+
+    @Override
+    public void operationDeleted(final int position) {
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                adapter.removeOperation(position);
+            }
+        });
+    }
+
+    @Override
+    public void operationInserted(final Operation operation) {
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                adapter.insertOperation(operation);
+            }
+        });
     }
 }

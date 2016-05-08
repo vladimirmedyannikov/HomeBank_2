@@ -6,6 +6,8 @@ import android.content.SharedPreferences;
 
 import com.birbit.android.jobqueue.JobManager;
 import com.birbit.android.jobqueue.config.Configuration;
+import com.squareup.otto.Bus;
+import com.squareup.otto.ThreadEnforcer;
 
 import javax.inject.Singleton;
 
@@ -19,6 +21,7 @@ import ru.medyannikov.homebank.di.scope.AppScope;
  * Created by vladimir on 01.05.16.
  */
 @Module
+@Singleton
 public class DataModule {
 
     @Provides
@@ -36,5 +39,11 @@ public class DataModule {
                 .loadFactor(3)
                 .consumerKeepAlive(120);
         return new JobManager(builder.build());
+    }
+
+    @Provides
+    @Singleton
+    Bus provideBus(){
+        return new Bus(ThreadEnforcer.ANY);
     }
 }

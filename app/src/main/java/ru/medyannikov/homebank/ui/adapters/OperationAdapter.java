@@ -35,7 +35,7 @@ public class OperationAdapter extends RecyclerView.Adapter<OperationViewHolder> 
         holder.value.setText(listOperation.get(position).getValue().toString());
         String dateText = new DateFormat().format("dd-MM-yyyy hh:mm",listOperation.get(position).getDateCreated()).toString();
         holder.date.setText(dateText);
-        holder.bill_name.setText(listOperation.get(position).getBill().getName());
+        //holder.bill_name.setText(listOperation.get(position).getBill().getName());
         holder.itemView.setId(listOperation.get(position).getIdOperation());
     }
 
@@ -46,5 +46,15 @@ public class OperationAdapter extends RecyclerView.Adapter<OperationViewHolder> 
 
     public Operation getOperation(int position) {
         return listOperation.get(position);
+    }
+
+    public  void removeOperation(int position){
+        listOperation.remove(position);
+        notifyItemRemoved(position);
+    }
+
+    public void insertOperation(Operation op){
+        listOperation.add(op);
+        notifyItemInserted(listOperation.size()-1);
     }
 }

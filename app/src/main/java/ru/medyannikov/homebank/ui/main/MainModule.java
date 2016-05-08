@@ -1,5 +1,8 @@
 package ru.medyannikov.homebank.ui.main;
 
+import com.squareup.otto.Bus;
+import com.squareup.otto.ThreadEnforcer;
+
 import javax.inject.Singleton;
 
 import dagger.Module;

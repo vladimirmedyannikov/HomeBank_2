@@ -32,12 +32,13 @@ public class RegistrationIntentService extends IntentService {
 
     public RegistrationIntentService() {
         super(TAG);
-        ((AndroidApplication)getApplication()).component().inject(this);
+        AndroidApplication.component().inject(this);
     }
 
 
     @Override
     protected void onHandleIntent(Intent intent) {
+
 
         InstanceID instanceID = InstanceID.getInstance(this);
         String senderId = getResources().getString(R.string.gcm_defaultSenderId);

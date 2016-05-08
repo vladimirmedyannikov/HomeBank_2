@@ -36,6 +36,7 @@ public class LoginActivity extends BaseActivity implements LoginView {
     Button mBntSingIn;
 
     @Inject LoginPresenter loginPresenter;
+    @Inject DataManager manager;
 
 
     private LoginActivityComponent component;
@@ -72,8 +73,8 @@ public class LoginActivity extends BaseActivity implements LoginView {
     @Subscribe
     public void loginUser(LoginSuccessEvent event){
         dialog.dismiss();
-        DataManager.getInstance().setToken(event.getTokenModel().getAccessToken());
-        DataManager.getInstance().auth();
+        manager.setToken(event.getTokenModel().getAccessToken());
+        manager.auth();
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }

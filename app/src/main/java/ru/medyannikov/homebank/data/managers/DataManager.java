@@ -46,6 +46,7 @@ public class DataManager {
     @Inject SharedPreferences sharedPreferences;
     @Inject JobManager jobManager;
     @Inject Context context;
+    @Inject Bus mBus;
     private static Account userModel;
     private static AccountManager accountManager;
     //private static JobManager jobManager;
@@ -56,13 +57,10 @@ public class DataManager {
         }
         return instance;
     }
-    private static Bus mBus;
+    //private static Bus mBus;
     private DataManager(){
         AndroidApplication.component().inject(this);
-        mBus = new Bus(ThreadEnforcer.ANY);
         mBus.register(this);
-        //jobManager = AndroidApplication.getJobManager();
-        //initializeUser();
     }
 
     public String getToken(){
@@ -87,7 +85,7 @@ public class DataManager {
         editor.apply();
     }
 
-    public static Bus getBus(){
+    public Bus getBus(){
         return mBus;
     }
 
@@ -181,7 +179,7 @@ public class DataManager {
         }
     }
 
-    public static void insertBill(Bill bill){
+    public void insertBill(Bill bill){
         RestService service = RestFactory.getRestService();
         service.createBill(bill, new Callback<Bill>() {
             @Override

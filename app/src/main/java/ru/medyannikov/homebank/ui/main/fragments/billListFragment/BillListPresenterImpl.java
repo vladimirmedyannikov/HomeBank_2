@@ -3,6 +3,7 @@ package ru.medyannikov.homebank.ui.main.fragments.billListFragment;
 import android.os.AsyncTask;
 import android.support.v4.os.AsyncTaskCompat;
 
+import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
 import java.util.List;
@@ -25,9 +26,12 @@ public class BillListPresenterImpl implements BillListPresenter {
     @Inject
     DataManager manager;
 
+    @Inject
+    Bus bus;
+
     public BillListPresenterImpl(){
         AndroidApplication.component().inject(this);
-        manager.getBus().register(this);
+        bus.register(this);
     }
 
     @Override
@@ -42,12 +46,12 @@ public class BillListPresenterImpl implements BillListPresenter {
 
     @Override
     public void onResume() {
-
+        updateBills();
     }
 
     @Override
     public void onDestroy() {
-        manager.getBus().unregister(this);
+        //if (bus != null) bus.unregister(this);
         view = null;
     }
 
@@ -97,7 +101,8 @@ public class BillListPresenterImpl implements BillListPresenter {
 
     @Subscribe
     public void onEvent(BillInsertEvent event){
-        updateBills();
+        view.billInserted(event.getBill());
+        //updateBills();
     }
 
     @Subscribe

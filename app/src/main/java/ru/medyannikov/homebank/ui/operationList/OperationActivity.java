@@ -1,6 +1,7 @@
 package ru.medyannikov.homebank.ui.operationList;
 
 import android.os.Bundle;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -8,6 +9,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.TextView;
 
 import javax.inject.Inject;
 
@@ -31,6 +33,12 @@ public class OperationActivity extends BaseActivity implements View.OnClickListe
 
     @Bind(R.id.view_pager)
     ViewPager viewPager;
+    @Bind(R.id.collapsing_toolbar)
+    CollapsingToolbarLayout collapsingToolbarLayout;
+    @Bind(R.id.bill_about_collapse_value)
+    TextView tv_bill_about;
+    @Bind(R.id.bill_value_collapse_value)
+    TextView tv_bill_value;
 
     private long billId;
     private Toolbar toolbar;
@@ -51,16 +59,24 @@ public class OperationActivity extends BaseActivity implements View.OnClickListe
         component = DaggerOperationComponent.builder()
                 .operationModule(new OperationModule(this)).build();
         component.inject(this);
-
+        initializeActivity();
+        initializeTabs();
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         presenter.onCreate();
     }
 
-    public void initializeTabs() {
+    private void initializeActivity(){
         setTitle("");
         billId = getIntent().getLongExtra(Bill.BILL_EXTRA, 0);
         bill = DataManager.getBill(billId);
+        collapsingToolbarLayout.setTitle(bill.getName());
+        tv_bill_value.setText(bill.getValue().toString());
+        tv_bill_about.setText(bill.getAbout());
+
+    }
+    public void initializeTabs() {
         OperationTabsFragment pager = new OperationTabsFragment(bill, getSupportFragmentManager(),this);
         viewPager.setAdapter(pager);
         tabLayout.setupWithViewPager(viewPager);

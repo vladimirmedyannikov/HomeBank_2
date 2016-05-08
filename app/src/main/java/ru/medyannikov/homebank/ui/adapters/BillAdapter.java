@@ -33,12 +33,13 @@ public class BillAdapter extends RecyclerView.Adapter<BillViewHolder> {
     @Override
     public void onBindViewHolder(BillViewHolder holder, int position) {
         Bill bill = billList.get(position);
-        holder.nameBill.setText(bill.getName());
-        holder.aboutBill.setText(bill.getAbout());
-        holder.summValue.setText(bill.getValue().toString());
-        holder.itemView.setId(bill.getIdBill());
-        holder.setBill(bill);
-
+        if (bill != null) {
+            holder.nameBill.setText(bill.getName());
+            holder.aboutBill.setText(bill.getAbout());
+            holder.summValue.setText(bill.getValue().toString());
+            holder.itemView.setId(bill.getIdBill());
+            holder.setBill(bill);
+        }
     }
 
     @Override
@@ -57,6 +58,12 @@ public class BillAdapter extends RecyclerView.Adapter<BillViewHolder> {
 
     public void insert(Bill bill){
         billList.add(bill);
+        notifyItemInserted(billList.size()-1);
+    }
+
+    public void remove(int position){
+        billList.remove(position);
+        notifyItemRemoved(position);
     }
 
 

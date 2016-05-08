@@ -29,6 +29,7 @@ public class AndroidApplication extends Application {
     private static AndroidApplicationComponent appComponent;
 
     @Inject SharedPreferences sharedPreferences;
+    @Inject DataManager manager;
 
     @Override
     public void onCreate() {

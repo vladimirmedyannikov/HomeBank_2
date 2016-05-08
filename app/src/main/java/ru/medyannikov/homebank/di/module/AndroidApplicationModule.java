@@ -4,6 +4,9 @@ import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.squareup.otto.Bus;
+import com.squareup.otto.ThreadEnforcer;
+
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -42,4 +45,6 @@ public class AndroidApplicationModule {
     SharedPreferences provideSharedPreferences(Application app){
         return app.getSharedPreferences(app.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
     }
+
+
 }

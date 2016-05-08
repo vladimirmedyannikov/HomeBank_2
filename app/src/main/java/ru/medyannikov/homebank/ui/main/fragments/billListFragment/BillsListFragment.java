@@ -5,6 +5,8 @@ package ru.medyannikov.homebank.ui.main.fragments.billListFragment;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -12,9 +14,12 @@ import android.support.v4.app.Fragment;
 import android.support.v4.os.AsyncTaskCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -65,6 +70,7 @@ public class BillsListFragment extends Fragment implements View.OnClickListener,
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Log.e("lo","createview");
         View view = inflater.inflate(R.layout.fragment_bills_list,null, false);
         ((MainActivity)getActivity()).getComponent().inject(this);
         presenter.attachView(this);
@@ -143,11 +149,16 @@ public class BillsListFragment extends Fragment implements View.OnClickListener,
 
 
     @Override
-    public void updateData(List<Bill> bills) {
-        billList = bills;
-        adapter = new BillAdapter(billList);
-        recyclerView.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
+    public void updateData(final List<Bill> bills) {
+        new Runnable(){
+            @Override
+            public void run() {
+                billList = bills;
+                adapter = new BillAdapter(billList);
+                recyclerView.setAdapter(adapter);
+                adapter.notifyDataSetChanged();
+            }
+        }.run();
     }
 
     @Override
@@ -191,9 +202,13 @@ public class BillsListFragment extends Fragment implements View.OnClickListener,
     }
 
     @Override
-    public void billDeleted(int positionAdapter, Bill bill) {
-        billList.remove(bill);
-        adapter.notifyItemRemoved(positionAdapter);
+    public void billDeleted(final int positionAdapter, Bill bill) {
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                adapter.remove(positionAdapter);
+            }
+        });
     }
 
     @Override
@@ -206,4 +221,12 @@ public class BillsListFragment extends Fragment implements View.OnClickListener,
         //adapter.notifyAll();
     }
 
+    public void billInserted(final Bill bill){
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                adapter.insert(bill);
+            }
+        });
+    }
 }
